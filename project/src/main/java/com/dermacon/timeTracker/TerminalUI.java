@@ -12,6 +12,7 @@ public class TerminalUI implements UserInterface {
     private static final String INTRO = "time-tracker v1.0\n";
     private static final String MANUAL = "usage:\n" +
             "  - p: pause (wip)\n" +
+            "  - i: insert pause (wip)\n" +
             "  - q: quit without editing\n" +
             "  - e: quit with editing\n";
 
@@ -129,8 +130,6 @@ public class TerminalUI implements UserInterface {
                 if (task.isRunning()) {
                     System.out.print("user input [" + task.displayPassedTime()
                             + "] > \r");
-                } else {
-                    System.out.print("task not running\r");
                 }
             }
         }, 10, DISPLAY_INTERVAL);

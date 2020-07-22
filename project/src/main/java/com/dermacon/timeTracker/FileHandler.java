@@ -14,6 +14,8 @@ public class FileHandler {
     public static List<File> getTrackedFiles() {
         List<File> l = new LinkedList<>();
         l.add(new File("erp.csv"));
+        l.add(new File("cg.csv"));
+        l.add(new File("pm.csv"));
         return l;
     }
 
