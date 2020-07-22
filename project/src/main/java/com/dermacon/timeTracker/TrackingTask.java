@@ -46,20 +46,21 @@ public class TrackingTask {
         }
     }
 
-    @Override
-    public String toString() {
-        end = end == null ? LocalDateTime.now() : end;
-        Duration duration = Duration.between(start, end);
+    public String displayPassedTime() {
+        LocalDateTime temp = end == null ? LocalDateTime.now() : end;
+        Duration duration = Duration.between(start, temp);
 
-        return start.format(FORMATTER) + ","
-                + end.format(FORMATTER) + ","
-                + durationFormat(duration);
-    }
-
-    private String durationFormat(Duration duration) {
         long s = duration.getSeconds();
         return String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60,
                 (s % 60));
+    }
+
+    @Override
+    public String toString() {
+        LocalDateTime temp = end == null ? LocalDateTime.now() : end;
+        return start.format(FORMATTER) + ","
+                + temp.format(FORMATTER) + ","
+                + displayPassedTime();
     }
 
 }

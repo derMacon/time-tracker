@@ -34,7 +34,7 @@ public class App {
             ui.endTimerDisplay(task);
             FileHandler.save(task);
 
-            System.out.println(REPEAT);
+            System.out.print(REPEAT);
             userInput = s.nextLine();
         } while (userInput.equalsIgnoreCase("y"));
 
