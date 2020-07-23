@@ -39,7 +39,8 @@ public class DurationFactory {
             Duration duration_total = sumUpDiff(start_timeStamps,
                     finish_timeStamps, (e -> true));
             Duration duration_today = sumUpDiff(start_timeStamps,
-                    finish_timeStamps, (e -> e.getHour() > NEW_DAY_HOUR));
+                    finish_timeStamps,
+                    (e -> e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth()));
 
             output.add(new DurationSingle(duration_total, duration_today, file));
         }
