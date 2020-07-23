@@ -4,6 +4,8 @@ import java.io.File;
 
 public interface UserInterface {
 
+    void displayOptions();
+
     /**
      * Setter for the task
      */

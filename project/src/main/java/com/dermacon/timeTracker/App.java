@@ -28,6 +28,7 @@ public class App {
 
         do {
             UserInterface ui = new TerminalUI();
+            ui.displayOptions();
             TrackingTask task = ui.selectTask();
             ui.startTimerDisplay(task);
             ui.waitForUserAbortion(task);

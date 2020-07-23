@@ -1,9 +1,15 @@
 package com.dermacon.timeTracker;
 
+import com.dermacon.timeTracker.durations.DurationFactory;
+import com.dermacon.timeTracker.durations.DurationSingle;
+import com.dermacon.timeTracker.durations.DurationTask;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,44 +33,75 @@ public class TerminalUI implements UserInterface {
 
     private Timer t = new Timer(true);
 
+
+
+
+
     @Override
-    public TrackingTask selectTask() {
+    public void displayOptions() {
+
+        DurationTask tasks = null;
+        try {
+            tasks = DurationFactory.createDurationTask();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         StringBuilder options = new StringBuilder(INTRO + "\n");
+
+        String total = "total: " + formatDuration(tasks.getTotal()) + "\n\n";
+        options.append(drawFrame(total));
+
+        String hori_line = getHoriLine();
+
+        options.append(hori_line);
 
         options.append(String.format(LINE_FORMAT,
                 StringUtils.center("idx",FST_COL_WIDTH),
                 StringUtils.center("name",SND_COL_WIDTH),
                 StringUtils.center("duration",THRD_COL_WIDTH)));
 
-        options.append(getHoriLine());
+        options.append(hori_line);
 
-        List<File> trackedFiles = FileHandler.getTrackedFiles();
-        int option_cnt = trackedFiles.size();
 
-        for (int i = 0; i < option_cnt; i++) {
+        int cnt = tasks.getChildrenCount();
+
+        for (int i = 0; i < cnt; i++) {
             options.append(String.format(LINE_FORMAT,
                     StringUtils.center((1 + i) + "",FST_COL_WIDTH),
-                    StringUtils.center(trackedFiles.get(i).getName(),SND_COL_WIDTH),
-                    StringUtils.center("-",THRD_COL_WIDTH)));
+                    StringUtils.center(tasks.get(i).getFile().getName(),
+                            SND_COL_WIDTH),
+                    StringUtils.center(formatDuration(tasks.get(i).getTotal()),
+                            THRD_COL_WIDTH)));
         }
 
         options.append(String.format(LINE_FORMAT,
-                StringUtils.center((option_cnt + 1) + "",FST_COL_WIDTH),
+                StringUtils.center((cnt + 1) + "",FST_COL_WIDTH),
                 StringUtils.center("new task",SND_COL_WIDTH),
                 StringUtils.center("-",THRD_COL_WIDTH)));
 
-        options.append("\nuser input: ");
-        System.out.print(options);
+        options.append(hori_line);
 
-        String userInput;
-        Scanner s = new Scanner(System.in);
-        do {
-            userInput = s.nextLine();
-            // todo check if valid idx
-        } while (!userInput.matches("\\d+"));
-
-        return new TrackingTask(trackedFiles.get(Integer.parseInt(userInput) - 1));
+        System.out.println(options);
     }
+
+
+    public String formatDuration(Duration duration) {
+        long s = duration.getSeconds();
+        return String.format("%02d:%02d:%02d:%02d",
+                s / (3600 * 24),
+                s / 3600,
+                (s % 3600) / 60,
+                (s % 60));
+    }
+
+
+    private String drawFrame(String in) {
+        // todo
+        return in;
+    }
+
+
 
 
     private String getHoriLine() {
@@ -84,6 +121,22 @@ public class TerminalUI implements UserInterface {
         return out.toString();
     }
 
+
+    @Override
+    public TrackingTask selectTask() {
+        System.out.print("user input: ");
+
+        String userInput;
+        Scanner s = new Scanner(System.in);
+        do {
+            userInput = s.nextLine();
+            // todo check if valid idx
+        } while (!userInput.matches("\\d+"));
+
+        List<File> trackedFiles = FileHandler.getTrackedFiles();
+
+        return new TrackingTask(trackedFiles.get(Integer.parseInt(userInput) - 1));
+    }
 
 
     @Override
