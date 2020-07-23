@@ -25,10 +25,12 @@ public class TerminalUI implements UserInterface {
     private static final int FST_COL_WIDTH = 5;
     private static final int SND_COL_WIDTH = 20;
     private static final int THRD_COL_WIDTH = 20;
+    private static final int FRTH_COL_WIDTH = 20;
 
     private static final String LINE_FORMAT = "|%1$-" + FST_COL_WIDTH + "s"
             + "|%2$-" + SND_COL_WIDTH + "s"
-            + "|%3$-" + THRD_COL_WIDTH + "s|\n";
+            + "|%3$-" + THRD_COL_WIDTH + "s"
+            + "|%4$-" + THRD_COL_WIDTH + "s|\n";
     private static final int DISPLAY_INTERVAL = 1000;
 
     private Timer t = new Timer(true);
@@ -59,7 +61,8 @@ public class TerminalUI implements UserInterface {
         options.append(String.format(LINE_FORMAT,
                 StringUtils.center("idx",FST_COL_WIDTH),
                 StringUtils.center("name",SND_COL_WIDTH),
-                StringUtils.center("duration",THRD_COL_WIDTH)));
+                StringUtils.center("today",THRD_COL_WIDTH),
+                StringUtils.center("total",FRTH_COL_WIDTH)));
 
         options.append(hori_line);
 
@@ -71,14 +74,17 @@ public class TerminalUI implements UserInterface {
                     StringUtils.center((1 + i) + "",FST_COL_WIDTH),
                     StringUtils.center(tasks.get(i).getFile().getName(),
                             SND_COL_WIDTH),
+                    StringUtils.center(formatDuration(tasks.get(i).getToday()),
+                            THRD_COL_WIDTH),
                     StringUtils.center(formatDuration(tasks.get(i).getTotal()),
-                            THRD_COL_WIDTH)));
+                            FRTH_COL_WIDTH)));
         }
 
         options.append(String.format(LINE_FORMAT,
                 StringUtils.center((cnt + 1) + "",FST_COL_WIDTH),
                 StringUtils.center("new task",SND_COL_WIDTH),
-                StringUtils.center("-",THRD_COL_WIDTH)));
+                StringUtils.center("-",THRD_COL_WIDTH),
+                StringUtils.center("-",FRTH_COL_WIDTH)));
 
         options.append(hori_line);
 
@@ -106,11 +112,12 @@ public class TerminalUI implements UserInterface {
 
     private String getHoriLine() {
         StringBuilder out = new StringBuilder("+");
-        int line_width = FST_COL_WIDTH + SND_COL_WIDTH + THRD_COL_WIDTH;
+        int line_width = FST_COL_WIDTH + SND_COL_WIDTH + THRD_COL_WIDTH + FRTH_COL_WIDTH;
         for (int i = 1; i <= line_width; i++) {
             if (i == FST_COL_WIDTH
                     || i == FST_COL_WIDTH + SND_COL_WIDTH
                     || i == FST_COL_WIDTH + SND_COL_WIDTH + THRD_COL_WIDTH
+                    || i == FST_COL_WIDTH + SND_COL_WIDTH + THRD_COL_WIDTH + FRTH_COL_WIDTH
             ) {
                 out.append("-+");
             } else {
