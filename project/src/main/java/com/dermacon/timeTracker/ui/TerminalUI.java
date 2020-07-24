@@ -36,9 +36,6 @@ public class TerminalUI implements UserInterface {
     private Timer t = new Timer(true);
 
 
-
-
-
     @Override
     public void displayOptions() {
 
