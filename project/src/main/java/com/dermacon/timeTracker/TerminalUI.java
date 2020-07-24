@@ -51,8 +51,9 @@ public class TerminalUI implements UserInterface {
 
         StringBuilder options = new StringBuilder(INTRO + "\n");
 
-        String total = "total: " + formatDuration(tasks.getTotal()) + "\n\n";
-        options.append(drawFrame(total));
+        String total = "total: " + formatDuration(tasks.getTotal()) + "\n";
+        String today = "today: " + formatDuration(tasks.getToday()) + "\n\n";
+        options.append(drawFrame(total + today));
 
         String hori_line = getHoriLine();
 

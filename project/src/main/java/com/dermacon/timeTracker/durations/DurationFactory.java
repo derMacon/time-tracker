@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,12 +42,33 @@ public class DurationFactory {
                     finish_timeStamps, (e -> true));
             Duration duration_today = sumUpDiff(start_timeStamps,
                     finish_timeStamps,
-                    (e -> e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth()));
+                    DurationFactory::isSameDay);
+//                    (e -> e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth()));
+
 
             output.add(new DurationSingle(duration_total, duration_today, file));
         }
 
         return output;
+    }
+
+    private static boolean isSameDay(LocalDateTime timeStamp) {
+        timeStamp = timeStamp.minusHours(NEW_DAY_HOUR);
+        LocalDateTime fake_midnight = LocalDateTime.now().minusHours(NEW_DAY_HOUR);
+
+        Duration diff = Duration.between(timeStamp, fake_midnight);
+
+        return fake_midnight.getDayOfYear() == timeStamp.getDayOfYear()
+                && !diff.isNegative() && diff.getSeconds() <= 24 * 60 * 60;
+
+//        LocalDateTime now = LocalDateTime.now();
+//        LocalDateTime morning = LocalDateTime.of(now.getYear(),
+//                now.getMonth(), now.getDayOfMonth(), NEW_DAY_HOUR, 0, 0);
+//        if (now.getHour() < NEW_DAY_HOUR) {
+//            morning = morning.minusDays(1);
+//        }
+//        Duration duration_morning = Duration.between(morning, timeStamp);
+//        return duration_morning.getSeconds() <= 24 * 60 * 60;
     }
 
     /**
