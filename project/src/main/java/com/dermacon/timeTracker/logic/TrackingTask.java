@@ -1,4 +1,4 @@
-package com.dermacon.timeTracker;
+package com.dermacon.timeTracker.logic;
 
 import java.io.File;
 import java.time.Duration;

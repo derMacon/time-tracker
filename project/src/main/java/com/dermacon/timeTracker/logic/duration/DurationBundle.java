@@ -1,4 +1,4 @@
-package com.dermacon.timeTracker.durations;
+package com.dermacon.timeTracker.logic.duration;
 
 import java.time.Duration;
 import java.util.LinkedList;

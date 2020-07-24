@@ -1,16 +1,13 @@
-package com.dermacon.timeTracker.durations;
+package com.dermacon.timeTracker.logic.duration;
 
-import com.dermacon.timeTracker.CSVReader;
-import com.dermacon.timeTracker.FileHandler;
+import com.dermacon.timeTracker.io.CSVReader;
+import com.dermacon.timeTracker.io.FileHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;

@@ -1,15 +1,15 @@
-package com.dermacon.timeTracker;
+package com.dermacon.timeTracker.ui;
 
-import com.dermacon.timeTracker.durations.DurationFactory;
-import com.dermacon.timeTracker.durations.DurationSingle;
-import com.dermacon.timeTracker.durations.DurationTask;
+import com.dermacon.timeTracker.io.FileHandler;
+import com.dermacon.timeTracker.logic.TrackingTask;
+import com.dermacon.timeTracker.logic.duration.DurationFactory;
+import com.dermacon.timeTracker.logic.duration.DurationTask;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;

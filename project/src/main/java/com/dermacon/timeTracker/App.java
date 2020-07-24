@@ -1,19 +1,11 @@
 package com.dermacon.timeTracker;
 
-import org.apache.commons.io.IOUtils;
+import com.dermacon.timeTracker.io.FileHandler;
+import com.dermacon.timeTracker.logic.TrackingTask;
+import com.dermacon.timeTracker.ui.TerminalUI;
+import com.dermacon.timeTracker.ui.UserInterface;
 
-import javax.sound.midi.Track;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Hello world!

@@ -1,6 +1,6 @@
-package com.dermacon.timeTracker;
+package com.dermacon.timeTracker.ui;
 
-import java.io.File;
+import com.dermacon.timeTracker.logic.TrackingTask;
 
 public interface UserInterface {
 

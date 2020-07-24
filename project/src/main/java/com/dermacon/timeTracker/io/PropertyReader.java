@@ -1,5 +1,6 @@
-package com.dermacon.timeTracker;
+package com.dermacon.timeTracker.io;
 
+import com.dermacon.timeTracker.App;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileNotFoundException;

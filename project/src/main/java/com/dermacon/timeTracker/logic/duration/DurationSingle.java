@@ -1,9 +1,7 @@
-package com.dermacon.timeTracker.durations;
+package com.dermacon.timeTracker.logic.duration;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
 
 public class DurationSingle implements DurationTask {
 

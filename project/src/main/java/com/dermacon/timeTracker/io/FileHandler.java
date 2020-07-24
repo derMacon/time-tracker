@@ -1,4 +1,6 @@
-package com.dermacon.timeTracker;
+package com.dermacon.timeTracker.io;
+
+import com.dermacon.timeTracker.logic.TrackingTask;
 
 import java.io.BufferedWriter;
 import java.io.File;
