@@ -9,10 +9,17 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 public class TerminalUI implements UserInterface {
 
     private static final String INTRO = "time-tracker v1.0\n";
@@ -21,6 +28,8 @@ public class TerminalUI implements UserInterface {
             "  - i: insert pause (wip)\n" +
             "  - q: quit without editing\n" +
             "  - e: quit with editing\n";
+
+
 
     private static final int FST_COL_WIDTH = 5;
     private static final int SND_COL_WIDTH = 20;
@@ -37,59 +46,58 @@ public class TerminalUI implements UserInterface {
 
 
     @Override
-    public void displayOptions() {
-
-        DurationTask tasks = null;
-        try {
-            tasks = DurationFactory.createDurationTask();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        StringBuilder options = new StringBuilder(INTRO + "\n");
-
-        String total = "total: " + formatDuration(tasks.getTotal()) + "\n";
-        String today = "today: " + formatDuration(tasks.getToday()) + "\n\n";
-        options.append(drawFrame(total + today));
-
-        String hori_line = getHoriLine();
-
-        options.append(hori_line);
-
-        options.append(String.format(LINE_FORMAT,
-                StringUtils.center("idx",FST_COL_WIDTH),
-                StringUtils.center("name",SND_COL_WIDTH),
-                StringUtils.center("today",THRD_COL_WIDTH),
-                StringUtils.center("total",FRTH_COL_WIDTH)));
-
-        options.append(hori_line);
-
-
-        int cnt = tasks.getChildrenCount();
-
-        for (int i = 0; i < cnt; i++) {
-            options.append(String.format(LINE_FORMAT,
-                    StringUtils.center((1 + i) + "",FST_COL_WIDTH),
-                    StringUtils.center(tasks.get(i).getFile().getName(),
-                            SND_COL_WIDTH),
-                    StringUtils.center(formatDuration(tasks.get(i).getToday()),
-                            THRD_COL_WIDTH),
-                    StringUtils.center(formatDuration(tasks.get(i).getTotal()),
-                            FRTH_COL_WIDTH)));
-        }
-
-        options.append(String.format(LINE_FORMAT,
-                StringUtils.center((cnt + 1) + "",FST_COL_WIDTH),
-                StringUtils.center("new task",SND_COL_WIDTH),
-                StringUtils.center("-",THRD_COL_WIDTH),
-                StringUtils.center("-",FRTH_COL_WIDTH)));
-
-        options.append(hori_line);
-
-        System.out.println(options);
+    public void displayInfo(DurationTask bundle) {
+        System.out.println(INTRO + drawGeneralInfo(bundle));
     }
 
+    @Override
+    public void displayOptions(Map<String, List<String>> table) {
+//        StringBuilder options = new StringBuilder();
+//        String hori_line = getHoriLine();
+//
+//        options.append(hori_line);
+//
+//        options.append(String.format(LINE_FORMAT,
+//                StringUtils.center("idx",FST_COL_WIDTH),
+//                StringUtils.center("name",SND_COL_WIDTH),
+//                StringUtils.center("today",THRD_COL_WIDTH),
+//                StringUtils.center("total",FRTH_COL_WIDTH)));
+//
+//        options.append(hori_line);
+//
+//
+//        int cnt = bundle.getChildrenCount();
+//
+//        for (int i = 0; i < cnt; i++) {
+//            options.append(String.format(LINE_FORMAT,
+//                    StringUtils.center((1 + i) + "",FST_COL_WIDTH),
+//                    StringUtils.center(bundle.get(i).getFile().getName(),
+//                            SND_COL_WIDTH),
+//                    StringUtils.center(formatDuration(bundle.get(i).getToday()),
+//                            THRD_COL_WIDTH),
+//                    StringUtils.center(formatDuration(bundle.get(i).getTotal()),
+//                            FRTH_COL_WIDTH)));
+//        }
+//
+//        options.append(String.format(LINE_FORMAT,
+//                StringUtils.center((cnt + 1) + "",FST_COL_WIDTH),
+//                StringUtils.center("new task",SND_COL_WIDTH),
+//                StringUtils.center("-",THRD_COL_WIDTH),
+//                StringUtils.center("-",FRTH_COL_WIDTH)));
+//
+//        options.append(hori_line);
+//
+//        return options.toString();
+        System.out.println("wip:\n" + table.toString());
+    }
 
+    private String drawGeneralInfo(DurationTask bundle) {
+        String total = "total: " + formatDuration(bundle.getTotal()) + "\n";
+        String today = "today: " + formatDuration(bundle.getToday()) + "\n\n";
+        return drawFrame(total + today);
+    }
+
+    // todo maybe delete this
     public String formatDuration(Duration duration) {
         long s = duration.getSeconds();
         return String.format("%02d:%02d:%02d:%02d",
@@ -98,7 +106,6 @@ public class TerminalUI implements UserInterface {
                 (s % 3600) / 60,
                 (s % 60));
     }
-
 
     private String drawFrame(String in) {
         // todo
@@ -128,7 +135,7 @@ public class TerminalUI implements UserInterface {
 
 
     @Override
-    public TrackingTask selectTask() {
+    public int selectTask() {
         System.out.print("user input: ");
 
         String userInput;
@@ -138,14 +145,12 @@ public class TerminalUI implements UserInterface {
             // todo check if valid idx
         } while (!userInput.matches("\\d+"));
 
-        List<File> trackedFiles = FileHandler.getTrackedFiles();
-
-        return new TrackingTask(trackedFiles.get(Integer.parseInt(userInput) - 1));
+        return Integer.parseInt(userInput);
     }
 
 
     @Override
-    public void waitForUserAbortion(TrackingTask task) {
+    public InteractionMode waitForUserAbortion() {
 
         System.out.println("\n" + MANUAL);
 
@@ -155,18 +160,23 @@ public class TerminalUI implements UserInterface {
             userInteraction = s.next();
         } while (!userInteraction.equals("q") && !userInteraction.equals("e"));
 
-        task.stopTask();
+//        task.stopTask();
+//
+//        // user wants to edit ending time
+//        if (userInteraction.equals("e")) {
+//            editEndingTime(task);
+//        }
 
-        // user wants to edit ending time
-        if (userInteraction.equals("e")) {
-            editEndingTime(task);
+        InteractionMode out = InteractionMode.QUIT_DIRECT;
+        if (userInteraction.equalsIgnoreCase("e")) {
+            out = InteractionMode.QUIT_EDIT;
         }
-
+        return out;
     }
 
 
     @Override
-    public void editEndingTime(TrackingTask task) {
+    public String editEndingTime() {
         System.out.println("Edit current task: " + task.getFile().getName() + "\n"
                 + "type the number of minutes you want to subtract from the " +
                 "end time");
@@ -176,7 +186,8 @@ public class TerminalUI implements UserInterface {
             userInput = s.nextLine();
         } while (!userInput.matches("\\d+"));
 
-        task.subtractMinutes(Integer.parseInt(userInput));
+//        task.subtractMinutes(Integer.parseInt(userInput));
+        return userInput;
     }
 
 

@@ -1,6 +1,7 @@
 package com.dermacon.timeTracker.logic.duration;
 
 import java.time.Duration;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,4 +44,8 @@ public class DurationBundle implements DurationTask {
         return this; // todo maybe take this out?
     }
 
+    @Override
+    public Iterator<DurationTask> iterator() {
+        return this.nodes.iterator();
+    }
 }
