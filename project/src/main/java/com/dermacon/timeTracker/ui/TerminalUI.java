@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -50,8 +52,80 @@ public class TerminalUI implements UserInterface {
         System.out.println(INTRO + drawGeneralInfo(bundle));
     }
 
+
+    private String drawHoriDivider(List<Integer> col_width) {
+        StringBuilder out = new StringBuilder("+");
+
+        for(Integer currWidth : col_width) {
+            for (int i = 0; i < currWidth; i++) {
+                out.append('-');
+            }
+            out.append("+");
+        }
+
+        return out.toString() + "\n";
+    }
+
+    private String drawTableLine(List<String> entries, List<Integer> col_width) {
+        assert entries != null && col_width != null
+                && entries.size() == col_width.size();
+
+        String out = "|";
+
+        int offset;
+        String currWord;
+        String padding = "";
+        for (int i = 0; i < entries.size(); i++) {
+            currWord = entries.get(i);
+
+            offset = (col_width.get(i) - currWord.length()) / 2;
+            for (int j = 0; j < offset; j++) {
+                padding += " ";
+            }
+
+            out += padding + currWord + padding + "|";
+        }
+
+        return out + "\n";
+    }
+
+
     @Override
     public void displayOptions(Map<String, List<String>> table) {
+
+        List<Integer> width_columns = new ArrayList<>();
+        List<String> words = new LinkedList<>();
+        Integer longestWordLen;
+
+        for (Map.Entry<String, List<String>> entry : table.entrySet()) {
+            words.add(entry.getKey());
+            words.addAll(entry.getValue());
+
+            longestWordLen = words.stream()
+                    .max(Comparator.comparing(String::length))
+                    .get().length() + 2;
+            width_columns.add(longestWordLen);
+
+            words.clear();
+        }
+
+        int col_cnt = width_columns.size();
+        int overall_width = width_columns.stream().reduce(0, Integer::sum)
+                + col_cnt + 1; // divider
+
+        // Header
+        String horiDivider = drawHoriDivider(width_columns);
+        StringBuilder table_print = new StringBuilder(horiDivider);
+        List<String> header = new ArrayList<>(table.keySet());
+        table_print.append(drawTableLine(header, width_columns));
+        table_print.append(horiDivider);
+
+        // rest of table
+
+        System.out.println(table_print);
+
+
+
 
 //        StringBuilder options = new StringBuilder();
 //        String hori_line = getHoriLine();
@@ -89,8 +163,9 @@ public class TerminalUI implements UserInterface {
 //        options.append(hori_line);
 //
 //        return options.toString();
-        System.out.println("wip:\n" + table.toString());
+//        System.out.println("wip:\n" + table.toString());
     }
+
 
     private String drawGeneralInfo(DurationTask bundle) {
         String total = "total: " + formatDuration(bundle.getTotal()) + "\n";
