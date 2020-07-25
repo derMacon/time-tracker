@@ -2,6 +2,7 @@ package com.dermacon.timeTracker.logic.duration;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.Iterator;
 
 public class DurationSingle implements DurationTask {
 
@@ -29,5 +30,20 @@ public class DurationSingle implements DurationTask {
     @Override
     public File getFile() {
         return this.file;
+    }
+
+    @Override
+    public Iterator<DurationTask> iterator() {
+        return new Iterator<DurationTask>() {
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public DurationTask next() {
+                return new DurationSingle(total, today, file);
+            }
+        };
     }
 }

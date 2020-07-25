@@ -1,18 +1,20 @@
 package com.dermacon.timeTracker.ui;
 
-import com.dermacon.timeTracker.io.FileHandler;
 import com.dermacon.timeTracker.logic.TrackingTask;
-import com.dermacon.timeTracker.logic.duration.DurationFactory;
 import com.dermacon.timeTracker.logic.duration.DurationTask;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 public class TerminalUI implements UserInterface {
 
     private static final String INTRO = "time-tracker v1.0\n";
@@ -22,77 +24,121 @@ public class TerminalUI implements UserInterface {
             "  - q: quit without editing\n" +
             "  - e: quit with editing\n";
 
+
+
     private static final int FST_COL_WIDTH = 5;
     private static final int SND_COL_WIDTH = 20;
     private static final int THRD_COL_WIDTH = 20;
     private static final int FRTH_COL_WIDTH = 20;
 
-    private static final String LINE_FORMAT = "|%1$-" + FST_COL_WIDTH + "s"
-            + "|%2$-" + SND_COL_WIDTH + "s"
-            + "|%3$-" + THRD_COL_WIDTH + "s"
-            + "|%4$-" + THRD_COL_WIDTH + "s|\n";
     private static final int DISPLAY_INTERVAL = 1000;
 
     private Timer t = new Timer(true);
 
 
+    @Override
+    public void displayInfo(DurationTask bundle) {
+        System.out.println(INTRO + drawGeneralInfo(bundle));
+    }
+
 
 
 
     @Override
-    public void displayOptions() {
+    public void displayOptions(Map<String, List<String>> table) {
 
-        DurationTask tasks = null;
-        try {
-            tasks = DurationFactory.createDurationTask();
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<Integer> width_columns = new ArrayList<>();
+        List<String> words = new LinkedList<>();
+        Integer longestWordLen;
+
+        for (Map.Entry<String, List<String>> entry : table.entrySet()) {
+            words.add(entry.getKey());
+            words.addAll(entry.getValue());
+
+            longestWordLen = words.stream()
+                    .max(Comparator.comparing(String::length))
+                    .get().length() + 2;
+            width_columns.add(longestWordLen);
+
+            words.clear();
         }
 
-        StringBuilder options = new StringBuilder(INTRO + "\n");
+        // Header
+        String horiDivider = drawHoriDivider(width_columns);
+        StringBuilder table_print = new StringBuilder(horiDivider);
+        List<String> header = new ArrayList<>(table.keySet());
+        table_print.append(drawTableLine(header, width_columns));
+        table_print.append(horiDivider);
 
-        String total = "total: " + formatDuration(tasks.getTotal()) + "\n";
-        String today = "today: " + formatDuration(tasks.getToday()) + "\n\n";
-        options.append(drawFrame(total + today));
+        // rest of table
+        List<Map.Entry<String, List<String>>> body = new ArrayList<>(table.entrySet());
+        int height = body.get(0).getValue().size();
 
-        String hori_line = getHoriLine();
+        List<String> currLine = new ArrayList<>();
+        String formatted_line;
 
-        options.append(hori_line);
+        for (int i = 0; i < height; i++) {
+            for (Map.Entry<String, List<String>> entry : body) {
+                currLine.add(entry.getValue().get(i));
+            }
 
-        options.append(String.format(LINE_FORMAT,
-                StringUtils.center("idx",FST_COL_WIDTH),
-                StringUtils.center("name",SND_COL_WIDTH),
-                StringUtils.center("today",THRD_COL_WIDTH),
-                StringUtils.center("total",FRTH_COL_WIDTH)));
+            formatted_line = drawTableLine(currLine, width_columns);
+            currLine.clear();
 
-        options.append(hori_line);
-
-
-        int cnt = tasks.getChildrenCount();
-
-        for (int i = 0; i < cnt; i++) {
-            options.append(String.format(LINE_FORMAT,
-                    StringUtils.center((1 + i) + "",FST_COL_WIDTH),
-                    StringUtils.center(tasks.get(i).getFile().getName(),
-                            SND_COL_WIDTH),
-                    StringUtils.center(formatDuration(tasks.get(i).getToday()),
-                            THRD_COL_WIDTH),
-                    StringUtils.center(formatDuration(tasks.get(i).getTotal()),
-                            FRTH_COL_WIDTH)));
+            table_print.append(formatted_line);
         }
 
-        options.append(String.format(LINE_FORMAT,
-                StringUtils.center((cnt + 1) + "",FST_COL_WIDTH),
-                StringUtils.center("new task",SND_COL_WIDTH),
-                StringUtils.center("-",THRD_COL_WIDTH),
-                StringUtils.center("-",FRTH_COL_WIDTH)));
+        table_print.append(horiDivider);
 
-        options.append(hori_line);
+        System.out.println(table_print);
+    }
 
-        System.out.println(options);
+    private String drawHoriDivider(List<Integer> col_width) {
+        StringBuilder out = new StringBuilder("+");
+
+        for(Integer currWidth : col_width) {
+            for (int i = 0; i < currWidth; i++) {
+                out.append('-');
+            }
+            out.append("+");
+        }
+
+        return out.toString() + "\n";
+    }
+
+    private String drawTableLine(List<String> entries, List<Integer> col_width) {
+        assert entries != null && col_width != null
+                && entries.size() == col_width.size();
+
+        String out = "|";
+        int diff;
+        String currWord;
+        String fstPadding, sndPadding;
+
+        for (int i = 0; i < entries.size(); i++) {
+            currWord = entries.get(i);
+
+            diff = col_width.get(i) - currWord.length();
+            // appends n blanks
+            fstPadding = IntStream.range(0, diff / 2)
+                    .mapToObj(n -> " ").collect(Collectors.joining(""));
+            sndPadding = IntStream.range(0, diff - (diff / 2))
+                    .mapToObj(n -> " ").collect(Collectors.joining(""));
+
+            out += fstPadding + currWord + sndPadding + "|";
+        }
+
+        return out + "\n";
     }
 
 
+    private String drawGeneralInfo(DurationTask bundle) {
+        String total = "total: " + formatDuration(bundle.getTotal()) + "\n";
+        String today = "today: " + formatDuration(bundle.getToday()) + "\n\n";
+        return drawFrame(total + today);
+    }
+
+    // todo maybe delete this
     public String formatDuration(Duration duration) {
         long s = duration.getSeconds();
         return String.format("%02d:%02d:%02d:%02d",
@@ -102,36 +148,14 @@ public class TerminalUI implements UserInterface {
                 (s % 60));
     }
 
-
     private String drawFrame(String in) {
         // todo
         return in;
     }
 
 
-
-
-    private String getHoriLine() {
-        StringBuilder out = new StringBuilder("+");
-        int line_width = FST_COL_WIDTH + SND_COL_WIDTH + THRD_COL_WIDTH + FRTH_COL_WIDTH;
-        for (int i = 1; i <= line_width; i++) {
-            if (i == FST_COL_WIDTH
-                    || i == FST_COL_WIDTH + SND_COL_WIDTH
-                    || i == FST_COL_WIDTH + SND_COL_WIDTH + THRD_COL_WIDTH
-                    || i == FST_COL_WIDTH + SND_COL_WIDTH + THRD_COL_WIDTH + FRTH_COL_WIDTH
-            ) {
-                out.append("-+");
-            } else {
-                out.append("-");
-            }
-        }
-        out.append("\n");
-        return out.toString();
-    }
-
-
     @Override
-    public TrackingTask selectTask() {
+    public int selectTask() {
         System.out.print("user input: ");
 
         String userInput;
@@ -141,14 +165,11 @@ public class TerminalUI implements UserInterface {
             // todo check if valid idx
         } while (!userInput.matches("\\d+"));
 
-        List<File> trackedFiles = FileHandler.getTrackedFiles();
-
-        return new TrackingTask(trackedFiles.get(Integer.parseInt(userInput) - 1));
+        return Integer.parseInt(userInput);
     }
 
-
     @Override
-    public void waitForUserAbortion(TrackingTask task) {
+    public InteractionMode waitForUserAbortion() {
 
         System.out.println("\n" + MANUAL);
 
@@ -158,19 +179,24 @@ public class TerminalUI implements UserInterface {
             userInteraction = s.next();
         } while (!userInteraction.equals("q") && !userInteraction.equals("e"));
 
-        task.stopTask();
+//        task.stopTask();
+//
+//        // user wants to edit ending time
+//        if (userInteraction.equals("e")) {
+//            editEndingTime(task);
+//        }
 
-        // user wants to edit ending time
-        if (userInteraction.equals("e")) {
-            editEndingTime(task);
+        InteractionMode out = InteractionMode.QUIT_DIRECT;
+        if (userInteraction.equalsIgnoreCase("e")) {
+            out = InteractionMode.QUIT_EDIT;
         }
-
+        return out;
     }
 
 
     @Override
-    public void editEndingTime(TrackingTask task) {
-        System.out.println("Edit current task: " + task.getFile().getName() + "\n"
+    public int editEndingTime(String task_name) {
+        System.out.println("Edit current task: " + task_name + "\n"
                 + "type the number of minutes you want to subtract from the " +
                 "end time");
         String userInput;
@@ -179,7 +205,7 @@ public class TerminalUI implements UserInterface {
             userInput = s.nextLine();
         } while (!userInput.matches("\\d+"));
 
-        task.subtractMinutes(Integer.parseInt(userInput));
+        return Integer.parseInt(userInput);
     }
 
 

@@ -2,8 +2,9 @@ package com.dermacon.timeTracker.logic.duration;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.Iterator;
 
-public interface DurationTask {
+public interface DurationTask extends Iterable<DurationTask> {
 
     Duration getTotal();
     Duration getToday();
