@@ -52,6 +52,7 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public void displayOptions(Map<String, List<String>> table) {
+
 //        StringBuilder options = new StringBuilder();
 //        String hori_line = getHoriLine();
 //
@@ -148,7 +149,6 @@ public class TerminalUI implements UserInterface {
         return Integer.parseInt(userInput);
     }
 
-
     @Override
     public InteractionMode waitForUserAbortion() {
 
@@ -176,8 +176,8 @@ public class TerminalUI implements UserInterface {
 
 
     @Override
-    public String editEndingTime() {
-        System.out.println("Edit current task: " + task.getFile().getName() + "\n"
+    public int editEndingTime(String task_name) {
+        System.out.println("Edit current task: " + task_name + "\n"
                 + "type the number of minutes you want to subtract from the " +
                 "end time");
         String userInput;
@@ -186,8 +186,7 @@ public class TerminalUI implements UserInterface {
             userInput = s.nextLine();
         } while (!userInput.matches("\\d+"));
 
-//        task.subtractMinutes(Integer.parseInt(userInput));
-        return userInput;
+        return Integer.parseInt(userInput);
     }
 
 

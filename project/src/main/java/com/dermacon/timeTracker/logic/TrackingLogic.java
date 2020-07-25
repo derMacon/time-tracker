@@ -61,7 +61,7 @@ public class TrackingLogic {
             idx.add(String.valueOf(i++));
             name.add(currTask.getFile().getName());
             today.add(formatDuration(currTask.getToday()));
-            today.add(formatDuration(currTask.getTotal()));
+            total.add(formatDuration(currTask.getTotal()));
         }
 
         table.put(IDX_KEY, idx);
@@ -90,15 +90,15 @@ public class TrackingLogic {
         ui.startTimerDisplay(task);
     }
 
+
     public void handleQuitting(InteractionMode mode) {
         if (mode == InteractionMode.QUIT_EDIT) {
-            ui.editEndingTime(task);
+            int offset_minutes = ui.editEndingTime(task.getFile().getName());
+            task.subtractMinutes(offset_minutes);
         }
 
         ui.endTimerDisplay(task);
         FileHandler.save(task);
     }
-
-
 
 }

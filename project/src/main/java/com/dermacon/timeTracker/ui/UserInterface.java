@@ -19,9 +19,8 @@ public interface UserInterface {
 
     /**
      * User can change the ending time of the task
-     * @param task task to modify
      */
-    void editEndingTime(TrackingTask task);
+    int editEndingTime(String task_name);
 
     InteractionMode waitForUserAbortion();
 
