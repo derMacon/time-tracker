@@ -19,17 +19,29 @@ public class InputController {
 
     public void start() {
 
-        String userInput;
+        String userInput = "";
         Scanner s = new Scanner(System.in);
 
         do {
             logic.showMenu();
             logic.selectTask(ui.selectTask());
-            logic.handleInteraction(ui.waitForUserInteraction());
+//            userSelect = ui.waitForUserInteraction();
+//            logic.handleInteraction(userSelect);
+            userInteractionCycle();
 
             System.out.print(REPEAT);
             userInput = s.nextLine();
+
         } while (userInput.equalsIgnoreCase("y"));
+    }
+
+    private void userInteractionCycle() {
+        InteractionMode userSelect;
+        do {
+            userSelect = ui.waitForUserInteraction();
+            logic.handleInteraction(userSelect);
+            logic.showMenu();
+        } while (userSelect == InteractionMode.PAUSE);
     }
 
 }

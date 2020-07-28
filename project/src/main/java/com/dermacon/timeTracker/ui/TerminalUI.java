@@ -33,7 +33,8 @@ public class TerminalUI implements UserInterface {
 
     private static final int DISPLAY_INTERVAL = 1000;
 
-    private Timer t = new Timer(true);
+    private Timer timer = new Timer(true);
+    private Scanner scanner = new Scanner(System.in);
 
 
     @Override
@@ -179,29 +180,13 @@ public class TerminalUI implements UserInterface {
             userInteraction = s.next().toLowerCase();
         } while (!userInteraction.equals("q")
                 && !userInteraction.equals("e")
-                && !userInteraction.equals("p")
-                && !userInteraction.equals("r"));
-
-//        task.stopTask();
-//
-//        // user wants to edit ending time
-//        if (userInteraction.equals("e")) {
-//            editEndingTime(task);
-//        }
-
-//        InteractionMode out = InteractionMode.QUIT_DIRECT;
-//        if (userInteraction.equalsIgnoreCase("e")) {
-//            out = InteractionMode.QUIT_EDIT;
-//        }
+                && !userInteraction.equals("p"));
 
         InteractionMode out = null;
 
         switch (userInteraction) {
             case "p":
                 out = InteractionMode.PAUSE;
-                break;
-            case "r":
-                out = InteractionMode.RESUME;
                 break;
             case "q":
                 out = InteractionMode.QUIT_DIRECT;
@@ -214,6 +199,11 @@ public class TerminalUI implements UserInterface {
         return out;
     }
 
+    public void waitForResume() {
+        System.out.print("Task paused, press any key to resume: ");
+        scanner.nextLine();
+    }
+
 
     @Override
     public int editEndingTime(String task_name) {
@@ -221,9 +211,8 @@ public class TerminalUI implements UserInterface {
                 + "type the number of minutes you want to subtract from the " +
                 "end time");
         String userInput;
-        Scanner s = new Scanner(System.in);
         do {
-            userInput = s.nextLine();
+            userInput = scanner.nextLine();
         } while (!userInput.matches("\\d+"));
 
         return Integer.parseInt(userInput);
@@ -232,7 +221,7 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public void startTimerDisplay(Session task) {
-        t.scheduleAtFixedRate(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (task.isRunning()) {
@@ -246,6 +235,6 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public void endTimerDisplay(Session task) {
-        t.cancel();
+        timer.cancel();
     }
 }

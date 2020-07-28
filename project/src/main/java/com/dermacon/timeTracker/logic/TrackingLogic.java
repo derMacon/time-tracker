@@ -93,8 +93,7 @@ public class TrackingLogic {
         switch (mode) {
             case PAUSE:
                 task.pause();
-                break;
-            case RESUME:
+                ui.waitForResume();
                 task.resume();
                 break;
             case QUIT_EDIT:

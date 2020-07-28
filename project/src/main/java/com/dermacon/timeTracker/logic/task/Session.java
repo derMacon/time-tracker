@@ -15,6 +15,7 @@ public class Session {
 
     public Session(File file) {
         this.file = file;
+        this.tasks.push(new TrackingTask());
     }
 
     public File getFile() {
@@ -59,7 +60,7 @@ public class Session {
     public String toString() {
         StringBuilder out = new StringBuilder();
         for (TrackingTask task : tasks) {
-            out.insert(0, task.toString());
+            out.insert(0, task.toString() + "\n");
         }
         return out.toString();
     }

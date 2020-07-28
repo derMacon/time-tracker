@@ -24,6 +24,8 @@ public interface UserInterface {
 
     InteractionMode waitForUserInteraction();
 
+    void waitForResume();
+
     void startTimerDisplay(Session task);
 
     void endTimerDisplay(Session task);
