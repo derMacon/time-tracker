@@ -1,8 +1,6 @@
 package com.dermacon.timeTracker.ui;
 
-import com.dermacon.timeTracker.io.FileHandler;
 import com.dermacon.timeTracker.logic.TrackingLogic;
-import com.dermacon.timeTracker.logic.TrackingTask;
 
 import java.util.Scanner;
 
@@ -27,7 +25,7 @@ public class InputController {
         do {
             logic.showMenu();
             logic.selectTask(ui.selectTask());
-            logic.handleQuitting(ui.waitForUserAbortion());
+            logic.handleInteraction(ui.waitForUserInteraction());
 
             System.out.print(REPEAT);
             userInput = s.nextLine();

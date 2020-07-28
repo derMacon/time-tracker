@@ -169,7 +169,7 @@ public class TerminalUI implements UserInterface {
     }
 
     @Override
-    public InteractionMode waitForUserAbortion() {
+    public InteractionMode waitForUserInteraction() {
 
         System.out.println("\n" + MANUAL);
 

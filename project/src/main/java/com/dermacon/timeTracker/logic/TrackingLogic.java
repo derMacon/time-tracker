@@ -91,14 +91,30 @@ public class TrackingLogic {
     }
 
 
-    public void handleQuitting(InteractionMode mode) {
+    public void handleInteraction(InteractionMode mode) {
         if (mode == InteractionMode.QUIT_EDIT) {
             int offset_minutes = ui.editEndingTime(task.getFile().getName());
             task.subtractMinutes(offset_minutes);
         }
 
-        ui.endTimerDisplay(task);
-        FileHandler.save(task);
+        switch (mode) {
+            case PAUSE:
+                task.pause();
+                break;
+            case RESUME:
+                task.resume();
+                break;
+            case QUIT_EDIT:
+                int offset_minutes = ui.editEndingTime(task.getFile().getName());
+                task.subtractMinutes(offset_minutes);
+                // important fall through -> quitting after editing
+            case QUIT_DIRECT:
+                ui.endTimerDisplay(task);
+                FileHandler.save(task);
+                break;
+        }
+
+
     }
 
 }

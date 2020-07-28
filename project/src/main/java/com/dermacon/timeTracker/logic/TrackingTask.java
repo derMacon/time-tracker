@@ -14,8 +14,9 @@ public class TrackingTask {
 
     private LocalDateTime start = LocalDateTime.now();
     private LocalDateTime end;
-
     private File file;
+
+    private TrackingTask next;
 
     public TrackingTask(File file) {
         this.file = file;
@@ -26,15 +27,25 @@ public class TrackingTask {
     }
 
     public boolean isRunning() {
-        return end == null;
+        return getLastElem().end == null;
     }
 
-    public void stopTask() {
-        this.end = LocalDateTime.now();
+    public void pause() {
+        getLastElem().end = LocalDateTime.now();
+    }
+
+    public void resume() {
+        getLastElem().next = new TrackingTask(this.file);
+    }
+
+    private TrackingTask getLastElem() {
+        return next == null ? this : next.getLastElem();
     }
 
     public void subtractMinutes(int min) {
-        if (end != null) {
+        if (next != null) {
+            next.subtractMinutes(min);
+        } else if (end != null) {
             min *= 60;
 
             end = end == null ? LocalDateTime.now() : end;
