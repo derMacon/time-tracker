@@ -1,6 +1,6 @@
 package com.dermacon.timeTracker.ui;
 
-import com.dermacon.timeTracker.logic.TrackingTask;
+import com.dermacon.timeTracker.logic.task.Session;
 import com.dermacon.timeTracker.logic.duration.DurationTask;
 
 import java.util.List;
@@ -25,8 +25,8 @@ public interface UserInterface {
     InteractionMode waitForUserAbortion();
 
 
-    void startTimerDisplay(TrackingTask task);
+    void startTimerDisplay(Session task);
 
-    void endTimerDisplay(TrackingTask task);
+    void endTimerDisplay(Session task);
 
 }

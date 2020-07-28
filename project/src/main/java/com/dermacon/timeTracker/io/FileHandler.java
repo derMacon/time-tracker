@@ -1,6 +1,6 @@
 package com.dermacon.timeTracker.io;
 
-import com.dermacon.timeTracker.logic.TrackingTask;
+import com.dermacon.timeTracker.logic.task.Session;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,7 +21,7 @@ public class FileHandler {
         return l;
     }
 
-    public static void save(TrackingTask task) {
+    public static void save(Session task) {
         File f = task.getFile();
 
         Path p = f.toPath();

@@ -1,6 +1,6 @@
 package com.dermacon.timeTracker.ui;
 
-import com.dermacon.timeTracker.logic.TrackingTask;
+import com.dermacon.timeTracker.logic.task.Session;
 import com.dermacon.timeTracker.logic.duration.DurationTask;
 
 import java.time.Duration;
@@ -210,7 +210,7 @@ public class TerminalUI implements UserInterface {
 
 
     @Override
-    public void startTimerDisplay(TrackingTask task) {
+    public void startTimerDisplay(Session task) {
         t.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -224,7 +224,7 @@ public class TerminalUI implements UserInterface {
 
 
     @Override
-    public void endTimerDisplay(TrackingTask task) {
+    public void endTimerDisplay(Session task) {
         t.cancel();
     }
 }

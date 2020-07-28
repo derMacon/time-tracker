@@ -1,12 +1,7 @@
 package com.dermacon.timeTracker;
 
-import com.dermacon.timeTracker.io.FileHandler;
-import com.dermacon.timeTracker.logic.TrackingTask;
 import com.dermacon.timeTracker.ui.InputController;
 import com.dermacon.timeTracker.ui.TerminalUI;
-import com.dermacon.timeTracker.ui.UserInterface;
-
-import java.util.Scanner;
 
 /**
  * Hello world!

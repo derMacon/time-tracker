@@ -1,9 +1,9 @@
 package com.dermacon.timeTracker.logic;
 
 import com.dermacon.timeTracker.io.FileHandler;
-import com.dermacon.timeTracker.logic.duration.DurationBundle;
 import com.dermacon.timeTracker.logic.duration.DurationFactory;
 import com.dermacon.timeTracker.logic.duration.DurationTask;
+import com.dermacon.timeTracker.logic.task.Session;
 import com.dermacon.timeTracker.ui.InteractionMode;
 import com.dermacon.timeTracker.ui.UserInterface;
 
@@ -14,8 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class TrackingLogic {
 
@@ -27,7 +25,7 @@ public class TrackingLogic {
     private final UserInterface ui;
 
     private DurationTask bundle;
-    private TrackingTask task;
+    private Session task;
 
 
     public TrackingLogic(UserInterface ui) {
@@ -85,7 +83,7 @@ public class TrackingLogic {
 
     public void selectTask(int userSelection) {
         File selectedFile = bundle.get(userSelection - 1).getFile();
-        task = new TrackingTask(selectedFile);
+        task = new Session(selectedFile);
 
         ui.startTimerDisplay(task);
     }
@@ -94,7 +92,7 @@ public class TrackingLogic {
     public void handleQuitting(InteractionMode mode) {
         if (mode == InteractionMode.QUIT_EDIT) {
             int offset_minutes = ui.editEndingTime(task.getFile().getName());
-            task.subtractMinutes(offset_minutes);
+            task.addMinutes(offset_minutes * -1);
         }
 
         ui.endTimerDisplay(task);
