@@ -7,13 +7,10 @@ import java.util.List;
 
 public class DurationBundle implements DurationTask {
 
+    /**
+     * Tasks pooled by the bundle
+     */
     private List<DurationTask> nodes = new LinkedList<>();
-
-    @Override
-    public int getChildrenCount() {
-        return nodes.size();
-    }
-
 
     @Override
     public DurationTask get(int i) {
