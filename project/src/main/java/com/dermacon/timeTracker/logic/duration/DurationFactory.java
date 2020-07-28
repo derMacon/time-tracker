@@ -19,6 +19,12 @@ import java.util.stream.Collectors;
  */
 public class DurationFactory {
 
+    public static String createFormattedStr(Duration duration) {
+        long s = duration.getSeconds();
+        return String.format("%d:%02d:%02d",
+                s / 3600, (s % 3600) / 60, (s % 60));
+    }
+
     /**
      * Hour offset for midnight. A new day for the tracking task does not start at
      * 0 o'clock but at 8 am. Makes it possible to track a task from e.g. 11 pm to 3 am.

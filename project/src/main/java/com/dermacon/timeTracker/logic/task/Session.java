@@ -1,10 +1,11 @@
 package com.dermacon.timeTracker.logic.task;
 
-import javax.sound.midi.Track;
 import java.io.File;
 import java.time.Duration;
-import java.time.format.DateTimeFormatter;
 import java.util.Stack;
+
+// todo maybe rethink project structure...
+import static com.dermacon.timeTracker.logic.duration.DurationFactory.createFormattedStr;
 
 public class Session {
 
@@ -24,6 +25,21 @@ public class Session {
         return !tasks.empty() && tasks.peek().isRunning();
     }
 
+    public void pause() {
+        if (isRunning()) {
+            tasks.peek().stopTask();
+        } else {
+            // todo throw Exception
+        }
+    }
+
+    public void resume() {
+        if (!isRunning()) {
+            tasks.push(new TrackingTask());
+        } else {
+            // todo throw Exception
+        }
+    }
 
     public void addMinutes(int min) {
         if (!tasks.isEmpty()) {
@@ -36,7 +52,7 @@ public class Session {
         for (TrackingTask curr : tasks) {
             total = total.plus(curr.getDuration());
         }
-        return
+        return createFormattedStr(total);
     }
 
     @Override

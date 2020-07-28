@@ -169,15 +169,18 @@ public class TerminalUI implements UserInterface {
     }
 
     @Override
-    public InteractionMode waitForUserAbortion() {
+    public InteractionMode waitForUserInteraction() {
 
         System.out.println("\n" + MANUAL);
 
         Scanner s = new Scanner(System.in);
         String userInteraction;
         do {
-            userInteraction = s.next();
-        } while (!userInteraction.equals("q") && !userInteraction.equals("e"));
+            userInteraction = s.next().toLowerCase();
+        } while (!userInteraction.equals("q")
+                && !userInteraction.equals("e")
+                && !userInteraction.equals("p")
+                && !userInteraction.equals("r"));
 
 //        task.stopTask();
 //
@@ -186,10 +189,28 @@ public class TerminalUI implements UserInterface {
 //            editEndingTime(task);
 //        }
 
-        InteractionMode out = InteractionMode.QUIT_DIRECT;
-        if (userInteraction.equalsIgnoreCase("e")) {
-            out = InteractionMode.QUIT_EDIT;
+//        InteractionMode out = InteractionMode.QUIT_DIRECT;
+//        if (userInteraction.equalsIgnoreCase("e")) {
+//            out = InteractionMode.QUIT_EDIT;
+//        }
+
+        InteractionMode out = null;
+
+        switch (userInteraction) {
+            case "p":
+                out = InteractionMode.PAUSE;
+                break;
+            case "r":
+                out = InteractionMode.RESUME;
+                break;
+            case "q":
+                out = InteractionMode.QUIT_DIRECT;
+                break;
+            case "e":
+                out = InteractionMode.QUIT_EDIT;
+                break;
         }
+
         return out;
     }
 

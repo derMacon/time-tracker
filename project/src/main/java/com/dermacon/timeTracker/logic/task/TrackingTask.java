@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.dermacon.timeTracker.logic.duration.DurationFactory.createFormattedStr;
+
 public class TrackingTask {
 
     public static final DateTimeFormatter FORMATTER =
@@ -45,11 +47,7 @@ public class TrackingTask {
     @Override
     public String toString() {
         LocalDateTime temp = end == null ? LocalDateTime.now() : end;
-
-        Duration duration = getDuration();
-        long s = duration.getSeconds();
-        String duration_str = String.format("%d:%02d:%02d",
-                s / 3600, (s % 3600) / 60, (s % 60));
+        String duration_str = createFormattedStr(getDuration());
 
         return start.format(FORMATTER) + ","
                 + temp.format(FORMATTER) + ","

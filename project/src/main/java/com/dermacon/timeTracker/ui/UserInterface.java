@@ -22,8 +22,7 @@ public interface UserInterface {
      */
     int editEndingTime(String task_name);
 
-    InteractionMode waitForUserAbortion();
-
+    InteractionMode waitForUserInteraction();
 
     void startTimerDisplay(Session task);
 

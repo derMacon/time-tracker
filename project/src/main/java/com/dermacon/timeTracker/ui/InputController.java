@@ -25,7 +25,7 @@ public class InputController {
         do {
             logic.showMenu();
             logic.selectTask(ui.selectTask());
-            logic.handleQuitting(ui.waitForUserAbortion());
+            logic.handleInteraction(ui.waitForUserInteraction());
 
             System.out.print(REPEAT);
             userInput = s.nextLine();
