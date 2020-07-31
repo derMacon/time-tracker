@@ -2,6 +2,7 @@ package com.dermacon.timeTracker.ui;
 
 import com.dermacon.timeTracker.logic.task.Session;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,9 @@ public interface UserInterface {
 
     void displayManual();
 
-    void displayInfo(String description);
+    void displayTotalDuration(Duration total);
+
+    void displayTodayDuration(Duration today);
 
     void displayOptions(Map<String, List<String>> table);
 

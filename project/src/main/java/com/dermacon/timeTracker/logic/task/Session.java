@@ -3,9 +3,10 @@ package com.dermacon.timeTracker.logic.task;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.Stack;
-
-import static com.dermacon.timeTracker.logic.task.TrackingTask.createFormattedStr;
+import java.util.function.Predicate;
 
 public class Session {
 
@@ -15,7 +16,7 @@ public class Session {
      */
     private static final int NEW_DAY_HOUR = 8;
 
-    private File file;
+    private final File file;
 
     private Stack<TrackingTask> tasks = new Stack<>();
 
@@ -63,15 +64,6 @@ public class Session {
         }
     }
 
-    public String displayPassedTime() {
-        Duration total = Duration.ZERO;
-        for (TrackingTask curr : tasks) {
-            total = total.plus(curr.getDuration());
-        }
-        return createFormattedStr(total);
-    }
-
-
     /**
      * todo
      * @param task
@@ -100,28 +92,46 @@ public class Session {
     }
 
 
-    public Duration getTotal() {
+    public Duration getTotalDuration() {
+        return Session.sumUpTasks(tasks, e -> true);
+    }
+
+
+    public Duration getTodayDuration() {
+        return Session.sumUpTasks(tasks, Session::isSameDay);
+    }
+
+
+    public static Duration getDurationSum_total(List<Session> sessions) {
+        return sumUpSessions(sessions, e -> true);
+    }
+
+    public static Duration getDurationSum_today(List<Session> sessions) {
+        return sumUpSessions(sessions, Session::isSameDay);
+    }
+
+    private static Duration sumUpSessions(Collection<Session> sessions,
+                                       Predicate<TrackingTask> filter) {
         Duration out = Duration.ZERO;
-        for (TrackingTask task : this.tasks) {
-            out = out.plus(task.getDuration());
+        for (Session session : sessions) {
+            out = out.plus(sumUpTasks(session.tasks, filter));
         }
         return out;
     }
 
-
-    public Duration getToday() {
+    private static Duration sumUpTasks(Collection<TrackingTask> tasks,
+                                       Predicate<TrackingTask> filter) {
         Duration out = Duration.ZERO;
-
-        for (TrackingTask task : this.tasks) {
-
-            if (isSameDay(task)) {
+        for (TrackingTask task : tasks) {
+            if (filter.test(task)) {
                 out = out.plus(task.getDuration());
             }
-
         }
-
         return out;
     }
+
+
+    // ---- formatting ----
 
 
     @Override

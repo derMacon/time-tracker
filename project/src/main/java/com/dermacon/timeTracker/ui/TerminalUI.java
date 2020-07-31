@@ -2,6 +2,7 @@ package com.dermacon.timeTracker.ui;
 
 import com.dermacon.timeTracker.logic.task.Session;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -22,13 +23,6 @@ public class TerminalUI implements UserInterface {
             "  - q: quit without editing\n" +
             "  - e: quit with editing\n";
 
-
-
-    private static final int FST_COL_WIDTH = 5;
-    private static final int SND_COL_WIDTH = 20;
-    private static final int THRD_COL_WIDTH = 20;
-    private static final int FRTH_COL_WIDTH = 20;
-
     private static final int DISPLAY_INTERVAL = 1000;
 
     private Timer timer = new Timer(true);
@@ -40,8 +34,22 @@ public class TerminalUI implements UserInterface {
     }
 
     @Override
-    public void displayInfo(String description) {
-        System.out.println(createFrame(INTRO + description));
+    public void displayTotalDuration(Duration total) {
+        System.out.println(formatDuration(total));
+    }
+
+    @Override
+    public void displayTodayDuration(Duration today) {
+        System.out.println(formatDuration(today));
+    }
+
+    private static String formatDuration(Duration duration) {
+        long s = duration.getSeconds();
+        return String.format("%02d:%02d:%02d:%02d",
+                s / (3600 * 24),
+                (s / 3600) % 24,
+                (s % 3600) / 60,
+                (s % 60));
     }
 
 
@@ -183,7 +191,7 @@ public class TerminalUI implements UserInterface {
             @Override
             public void run() {
                 if (task.isRunning()) {
-                    System.out.print("user input [" + task.displayPassedTime()
+                    System.out.print("user input [" + task.getTodayDuration()
                             + "] > \r");
                 }
             }
