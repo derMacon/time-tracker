@@ -14,9 +14,25 @@ public class TrackingTask {
                     "-yyyy HH:mm:ss");
 
 
-    private LocalDateTime start = LocalDateTime.now();
+    private LocalDateTime start;
     private LocalDateTime end;
 
+    public TrackingTask() {
+        this(LocalDateTime.now(), null);
+    }
+
+    public TrackingTask(LocalDateTime start, LocalDateTime end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
 
     public boolean isRunning() {
         return end == null;

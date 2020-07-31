@@ -8,7 +8,10 @@ import java.util.Map;
 
 public interface UserInterface {
 
-    void displayInfo(DurationTask bundle);
+
+    void displayManual();
+
+    void displayInfo(String description);
 
     void displayOptions(Map<String, List<String>> table);
 
@@ -21,8 +24,6 @@ public interface UserInterface {
      * User can change the ending time of the task
      */
     int editEndingTime(String task_name);
-
-    InteractionMode waitForUserInteraction();
 
     void waitForResume();
 

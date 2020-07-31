@@ -9,7 +9,7 @@ import com.dermacon.timeTracker.ui.TerminalUI;
 public class App {
 
     public static void main(String[] args) {
-        new InputController(new TerminalUI()).start();
+        new InputController(new TerminalUI()).run();
     }
 
 }

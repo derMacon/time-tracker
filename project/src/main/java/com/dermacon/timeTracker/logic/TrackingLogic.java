@@ -1,21 +1,24 @@
 package com.dermacon.timeTracker.logic;
 
 import com.dermacon.timeTracker.io.FileHandler;
-import com.dermacon.timeTracker.logic.duration.DurationFactory;
 import com.dermacon.timeTracker.logic.duration.DurationTask;
 import com.dermacon.timeTracker.logic.task.Session;
-import com.dermacon.timeTracker.ui.InteractionMode;
+import com.dermacon.timeTracker.logic.task.SessionFactory;
+import com.dermacon.timeTracker.logic.task.TrackingTask;
 import com.dermacon.timeTracker.ui.UserInterface;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class TrackingLogic {
+
+    private static final String INFO_FORMAT = "total: %s\ntoday: %s\n\n";
 
     private static final String IDX_KEY = "idx";
     private static final String NAME_KEY = "name";
@@ -24,8 +27,11 @@ public class TrackingLogic {
 
     private final UserInterface ui;
 
-    private DurationTask bundle;
-    private Session task;
+    private List<Session> trackedSessions;
+
+    private Session selectedSession;
+
+
 
 
     public TrackingLogic(UserInterface ui) {
@@ -33,21 +39,52 @@ public class TrackingLogic {
 
         try {
             // todo handle exception properly
-            bundle = DurationFactory.createDurationTask();
+            this.trackedSessions = SessionFactory.createSessionLst();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void showMenu() {
+    public boolean isRunning() {
+        return selectedSession.isRunning();
+    }
 
+    public void showGeneralInfo() {
+        Duration total = getTotalDuration();
+        Duration today = getTodayDuration();
+
+        String outputString = String.format(INFO_FORMAT,
+                formatDuration(total),
+                formatDuration(today));
+
+        ui.displayInfo(outputString);
+    }
+
+    private Duration getTotalDuration() {
+        Duration out = Duration.ZERO;
+        for (Session session : trackedSessions) {
+            out = out.plus(session.getTotal());
+        }
+        return out;
+    }
+
+    private Duration getTodayDuration() {
+        Duration out = Duration.ZERO;
+        for (Session session : trackedSessions) {
+            out = out.plus(session.getToday());
+        }
+        return out;
+    }
+
+
+    public void showMenu() {
+        Map<String, List<String>> table = convertSessionsToMap(trackedSessions);
+        ui.displayOptions(table);
+    }
+
+    private static Map<String, List<String>> convertSessionsToMap(List<Session> sessions) {
         // important, keep keys in order they were inserted (LinkedHashMap)
         Map<String, List<String>> table = new LinkedHashMap<>();
-
-//        List<String> idx = IntStream.range(1, bundle.getChildrenCount())
-//                .mapToObj(String::valueOf)
-//                .collect(Collectors.toList());
-//        table.put("idx", idx);
 
         List<String> idx = new LinkedList<>();
         List<String> name = new LinkedList<>();
@@ -55,56 +92,55 @@ public class TrackingLogic {
         List<String> total = new LinkedList<>();
         int i = 1;
 
-        for (DurationTask currTask : bundle) {
+        for (Session currSession : sessions) {
             idx.add(String.valueOf(i++));
-            name.add(currTask.getFile().getName());
-            today.add(formatDuration(currTask.getToday()));
-            total.add(formatDuration(currTask.getTotal()));
+            name.add(currSession.getFile().getName());
+            today.add(formatDuration(currSession.getToday()));
+            total.add(formatDuration(currSession.getTotal()));
         }
 
         table.put(IDX_KEY, idx);
         table.put(NAME_KEY, name);
         table.put(TODAY_KEY, today);
         table.put(TOTAL_KEY, total);
-
-        ui.displayInfo(bundle);
-        ui.displayOptions(table);
+        return table;
     }
 
     private static String formatDuration(Duration duration) {
         long s = duration.getSeconds();
         return String.format("%02d:%02d:%02d:%02d",
                 s / (3600 * 24),
-                s / 3600,
+                (s / 3600) % 24,
                 (s % 3600) / 60,
                 (s % 60));
     }
 
+    public void selectTask() {
+            showGeneralInfo();
+            showMenu();
+            select(ui.selectTask());
+    }
 
-    public void selectTask(int userSelection) {
-        File selectedFile = bundle.get(userSelection - 1).getFile();
-        task = new Session(selectedFile);
-
-        ui.startTimerDisplay(task);
+    public void select(int userSelection) {
+        selectedSession = trackedSessions.get(userSelection);
+        ui.startTimerDisplay(selectedSession);
     }
 
 
-    public void handleInteraction(InteractionMode mode) {
-        switch (mode) {
-            case PAUSE:
-                task.pause();
-                ui.waitForResume();
-                task.resume();
-                break;
-            case QUIT_EDIT:
-                int offset_minutes = ui.editEndingTime(task.getFile().getName());
-                task.addMinutes(offset_minutes * -1);
-                // fall through important -> quit after edit
-            case QUIT_DIRECT:
-                ui.endTimerDisplay(task);
-                FileHandler.save(task);
-                break;
-        }
+    public void editEndingTime() {
+        int offset_minutes = ui.editEndingTime(selectedSession.getFile().getName());
+        selectedSession.addMinutes(offset_minutes * -1);
+    }
+
+    public void quit() {
+        ui.endTimerDisplay(selectedSession);
+        FileHandler.save(selectedSession);
+    }
+
+    public void handlePause() {
+        selectedSession.pause();
+        ui.waitForResume();
+        selectedSession.resume();
     }
 
 }

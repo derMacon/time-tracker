@@ -7,6 +7,9 @@ import java.util.Scanner;
 public class InputController {
 
     private static final String REPEAT = "continue time tracking [y/n]: ";
+    private static final String QUIT_STR = "q";
+    private static final String EDIT_STR = "e";
+    private static final String PAUSE_STR = "p";
 
     private final UserInterface ui;
     private TrackingLogic logic;
@@ -17,31 +20,52 @@ public class InputController {
         this.logic = new TrackingLogic(ui);
     }
 
-    public void start() {
+    public void run() {
 
-        String userInput = "";
         Scanner s = new Scanner(System.in);
+        String userInput;
 
         do {
-            logic.showMenu();
-            logic.selectTask(ui.selectTask());
-//            userSelect = ui.waitForUserInteraction();
-//            logic.handleInteraction(userSelect);
-            userInteractionCycle();
+            logic.selectTask();
+            waitForUserInteraction();
 
             System.out.print(REPEAT);
             userInput = s.nextLine();
 
         } while (userInput.equalsIgnoreCase("y"));
+
     }
 
-    private void userInteractionCycle() {
-        InteractionMode userSelect;
+    private void waitForUserInteraction() {
         do {
-            userSelect = ui.waitForUserInteraction();
-            logic.handleInteraction(userSelect);
+            ui.displayManual();
+            handleUserInteraction();
             logic.showMenu();
-        } while (userSelect == InteractionMode.PAUSE);
+        } while (!logic.isRunning());
+    }
+
+
+    public void handleUserInteraction() {
+        Scanner s = new Scanner(System.in);
+        String userInteraction;
+        do {
+            userInteraction = s.next().toLowerCase();
+        } while (!userInteraction.equals(QUIT_STR)
+                && !userInteraction.equals(EDIT_STR)
+                && !userInteraction.equals(PAUSE_STR));
+
+        switch (userInteraction) {
+            case PAUSE_STR:
+                logic.handlePause();
+                break;
+            case EDIT_STR:
+                logic.editEndingTime();
+                logic.quit();
+                break;
+            case QUIT_STR:
+                logic.quit();
+                break;
+        }
     }
 
 }

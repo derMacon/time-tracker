@@ -1,9 +1,7 @@
 package com.dermacon.timeTracker.ui;
 
 import com.dermacon.timeTracker.logic.task.Session;
-import com.dermacon.timeTracker.logic.duration.DurationTask;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -36,17 +34,21 @@ public class TerminalUI implements UserInterface {
     private Timer timer = new Timer(true);
     private Scanner scanner = new Scanner(System.in);
 
-
     @Override
-    public void displayInfo(DurationTask bundle) {
-        System.out.println(INTRO + drawGeneralInfo(bundle));
+    public void displayManual() {
+
     }
 
+    @Override
+    public void displayInfo(String description) {
+        System.out.println(createFrame(INTRO + description));
+    }
 
 
 
     @Override
     public void displayOptions(Map<String, List<String>> table) {
+        // todo cleanup
 
         List<Integer> width_columns = new ArrayList<>();
         List<String> words = new LinkedList<>();
@@ -133,23 +135,7 @@ public class TerminalUI implements UserInterface {
     }
 
 
-    private String drawGeneralInfo(DurationTask bundle) {
-        String total = "total: " + formatDuration(bundle.getTotal()) + "\n";
-        String today = "today: " + formatDuration(bundle.getToday()) + "\n\n";
-        return drawFrame(total + today);
-    }
-
-    // todo maybe delete this
-    public String formatDuration(Duration duration) {
-        long s = duration.getSeconds();
-        return String.format("%02d:%02d:%02d:%02d",
-                s / (3600 * 24),
-                s / 3600,
-                (s % 3600) / 60,
-                (s % 60));
-    }
-
-    private String drawFrame(String in) {
+    private String createFrame(String in) {
         // todo
         return in;
     }
@@ -169,36 +155,8 @@ public class TerminalUI implements UserInterface {
         return Integer.parseInt(userInput);
     }
 
+
     @Override
-    public InteractionMode waitForUserInteraction() {
-
-        System.out.println("\n" + MANUAL);
-
-        Scanner s = new Scanner(System.in);
-        String userInteraction;
-        do {
-            userInteraction = s.next().toLowerCase();
-        } while (!userInteraction.equals("q")
-                && !userInteraction.equals("e")
-                && !userInteraction.equals("p"));
-
-        InteractionMode out = null;
-
-        switch (userInteraction) {
-            case "p":
-                out = InteractionMode.PAUSE;
-                break;
-            case "q":
-                out = InteractionMode.QUIT_DIRECT;
-                break;
-            case "e":
-                out = InteractionMode.QUIT_EDIT;
-                break;
-        }
-
-        return out;
-    }
-
     public void waitForResume() {
         System.out.print("Task paused, press any key to resume: ");
         scanner.nextLine();
@@ -237,4 +195,5 @@ public class TerminalUI implements UserInterface {
     public void endTimerDisplay(Session task) {
         timer.cancel();
     }
+
 }
