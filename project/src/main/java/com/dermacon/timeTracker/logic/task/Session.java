@@ -5,8 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Stack;
 
-// todo maybe rethink project structure...
-import static com.dermacon.timeTracker.logic.duration.DurationFactory.createFormattedStr;
+import static com.dermacon.timeTracker.logic.task.TrackingTask.createFormattedStr;
 
 public class Session {
 
@@ -25,12 +24,12 @@ public class Session {
         this.tasks.push(new TrackingTask());
     }
 
-    public Stack<TrackingTask> getTasks() {
-        return tasks;
-    }
-
     public File getFile() {
         return file;
+    }
+
+    public void startNewTask() {
+        addTrackingTask(new TrackingTask());
     }
 
     public void addTrackingTask(TrackingTask task) {

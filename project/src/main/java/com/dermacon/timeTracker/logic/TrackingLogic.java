@@ -1,16 +1,13 @@
 package com.dermacon.timeTracker.logic;
 
 import com.dermacon.timeTracker.io.FileHandler;
-import com.dermacon.timeTracker.logic.duration.DurationTask;
 import com.dermacon.timeTracker.logic.task.Session;
 import com.dermacon.timeTracker.logic.task.SessionFactory;
 import com.dermacon.timeTracker.logic.task.TrackingTask;
 import com.dermacon.timeTracker.ui.UserInterface;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,8 +29,6 @@ public class TrackingLogic {
     private Session selectedSession;
 
 
-
-
     public TrackingLogic(UserInterface ui) {
         this.ui = ui;
 
@@ -43,6 +38,8 @@ public class TrackingLogic {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 
     public boolean isRunning() {
@@ -116,13 +113,14 @@ public class TrackingLogic {
     }
 
     public void selectTask() {
-            showGeneralInfo();
-            showMenu();
-            select(ui.selectTask());
+        showGeneralInfo();
+        showMenu();
+        select(ui.selectTask());
     }
 
     public void select(int userSelection) {
         selectedSession = trackedSessions.get(userSelection);
+        selectedSession.startNewTask();
         ui.startTimerDisplay(selectedSession);
     }
 

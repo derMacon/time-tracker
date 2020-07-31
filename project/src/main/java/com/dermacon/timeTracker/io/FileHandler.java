@@ -18,6 +18,7 @@ public class FileHandler {
         l.add(new File("erp.csv"));
         l.add(new File("cg.csv"));
         l.add(new File("pm.csv"));
+        l.add(new File("test.csv"));
         return l;
     }
 

@@ -12,19 +12,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class SessionFactory {
 
     private static final String START_TIMESTAMP = "start";
     private static final String FINISH_TIMESTAMP = "finish";
 
-
-    public static String createFormattedStr(Duration duration) {
-        long s = duration.getSeconds();
-        return String.format("%d:%02d:%02d",
-                s / 3600, (s % 3600) / 60, (s % 60));
-    }
 
     public static List<Session> createSessionLst() throws IOException {
         List<Session> out = new LinkedList<>();
