@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;
 
+/**
+ * Serves as a wrapper for a list of TrackingTask
+ */
 public class Session {
 
     /**
@@ -16,8 +19,14 @@ public class Session {
      */
     private static final int NEW_DAY_HOUR = 8;
 
+    /**
+     * csv file to which the timestamps are saved in
+     */
     private final File file;
 
+    /**
+     * Tasks to append
+     */
     private Stack<TrackingTask> tasks = new Stack<>();
 
     public Session(File file) {
@@ -36,7 +45,6 @@ public class Session {
     public void addTrackingTask(TrackingTask task) {
         this.tasks.push(task);
     }
-
 
     public boolean isRunning() {
         return !tasks.empty() && tasks.peek().isRunning();
@@ -65,9 +73,9 @@ public class Session {
     }
 
     /**
-     * todo
-     * @param task
-     * @return
+     * Checks if a given Tasks started on the current day
+     * @param task task to check
+     * @return true if a given Tasks started on the current day
      */
     private static boolean isSameDay(TrackingTask task) {
         return task != null && isSameDay(task.getStart())
@@ -110,6 +118,13 @@ public class Session {
         return sumUpSessions(sessions, Session::isSameDay);
     }
 
+    /**
+     * Sums up the duration for a list of sessions.
+     * Only adds those Sessions that fulfill
+     * @param sessions Sessions that will be evaluated
+     * @param filter Predicate that will be evaluated for each Session
+     * @return summed up duration of all given sessions
+     */
     private static Duration sumUpSessions(Collection<Session> sessions,
                                        Predicate<TrackingTask> filter) {
         Duration out = Duration.ZERO;
@@ -118,6 +133,7 @@ public class Session {
         }
         return out;
     }
+
 
     private static Duration sumUpTasks(Collection<TrackingTask> tasks,
                                        Predicate<TrackingTask> filter) {
@@ -129,9 +145,6 @@ public class Session {
         }
         return out;
     }
-
-
-    // ---- formatting ----
 
 
     @Override

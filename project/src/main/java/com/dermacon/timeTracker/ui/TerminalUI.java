@@ -3,18 +3,25 @@ package com.dermacon.timeTracker.ui;
 import com.dermacon.timeTracker.logic.task.Session;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+import static com.dermacon.timeTracker.ui.StringUtils.convertToPrintableStr;
+
+/**
+ * User interface implementation for the terminal window
+ */
 public class TerminalUI implements UserInterface {
+
+    private static final String IDX_KEY = "idx";
+    private static final String NAME_KEY = "name";
+    private static final String TODAY_KEY = "today";
+    private static final String TOTAL_KEY = "total";
 
     private static final String INTRO = "time-tracker v1.0\n";
     private static final String MANUAL = "usage:\n" +
@@ -30,7 +37,7 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public void displayManual() {
-
+        System.out.println(INTRO + MANUAL);
     }
 
     @Override
@@ -43,6 +50,49 @@ public class TerminalUI implements UserInterface {
         System.out.println(formatDuration(today));
     }
 
+    @Override
+    public void displayOptions(List<Session> trackedSessions) {
+        Map<String, List<String>> table = convertSessionsToMap(trackedSessions);
+        String printableStr = convertToPrintableStr(table);
+        System.out.println(printableStr);
+    }
+
+    /**
+     * Converts a list of sessions to a map which can be displayed in a table
+     *
+     * @param sessions List of sessions that will be processed
+     * @return a list of sessions to a map which can be displayed in a table
+     */
+    private static Map<String, List<String>> convertSessionsToMap(List<Session> sessions) {
+        // important, keep keys in order they were inserted (LinkedHashMap)
+        Map<String, List<String>> table = new LinkedHashMap<>();
+
+        List<String> idx = new LinkedList<>();
+        List<String> name = new LinkedList<>();
+        List<String> today = new LinkedList<>();
+        List<String> total = new LinkedList<>();
+        int i = 1;
+
+        for (Session currSession : sessions) {
+            idx.add(String.valueOf(i++));
+            name.add(currSession.getFile().getName());
+            today.add(formatDuration(currSession.getTotalDuration()));
+            total.add(formatDuration(currSession.getTodayDuration()));
+        }
+
+        table.put(IDX_KEY, idx);
+        table.put(NAME_KEY, name);
+        table.put(TODAY_KEY, today);
+        table.put(TOTAL_KEY, total);
+        return table;
+    }
+
+    /**
+     * Formats a given duration to a String that can be displayed
+     *
+     * @param duration duration that will be formatted
+     * @return a given duration to a String that can be displayed
+     */
     private static String formatDuration(Duration duration) {
         long s = duration.getSeconds();
         return String.format("%02d:%02d:%02d:%02d",
@@ -51,103 +101,6 @@ public class TerminalUI implements UserInterface {
                 (s % 3600) / 60,
                 (s % 60));
     }
-
-
-
-    @Override
-    public void displayOptions(Map<String, List<String>> table) {
-        // todo cleanup
-
-        List<Integer> width_columns = new ArrayList<>();
-        List<String> words = new LinkedList<>();
-        Integer longestWordLen;
-
-        for (Map.Entry<String, List<String>> entry : table.entrySet()) {
-            words.add(entry.getKey());
-            words.addAll(entry.getValue());
-
-            longestWordLen = words.stream()
-                    .max(Comparator.comparing(String::length))
-                    .get().length() + 2;
-            width_columns.add(longestWordLen);
-
-            words.clear();
-        }
-
-        // Header
-        String horiDivider = drawHoriDivider(width_columns);
-        StringBuilder table_print = new StringBuilder(horiDivider);
-        List<String> header = new ArrayList<>(table.keySet());
-        table_print.append(drawTableLine(header, width_columns));
-        table_print.append(horiDivider);
-
-        // rest of table
-        List<Map.Entry<String, List<String>>> body = new ArrayList<>(table.entrySet());
-        int height = body.get(0).getValue().size();
-
-        List<String> currLine = new ArrayList<>();
-        String formatted_line;
-
-        for (int i = 0; i < height; i++) {
-            for (Map.Entry<String, List<String>> entry : body) {
-                currLine.add(entry.getValue().get(i));
-            }
-
-            formatted_line = drawTableLine(currLine, width_columns);
-            currLine.clear();
-
-            table_print.append(formatted_line);
-        }
-
-        table_print.append(horiDivider);
-
-        System.out.println(table_print);
-    }
-
-    private String drawHoriDivider(List<Integer> col_width) {
-        StringBuilder out = new StringBuilder("+");
-
-        for(Integer currWidth : col_width) {
-            for (int i = 0; i < currWidth; i++) {
-                out.append('-');
-            }
-            out.append("+");
-        }
-
-        return out.toString() + "\n";
-    }
-
-    private String drawTableLine(List<String> entries, List<Integer> col_width) {
-        assert entries != null && col_width != null
-                && entries.size() == col_width.size();
-
-        String out = "|";
-        int diff;
-        String currWord;
-        String fstPadding, sndPadding;
-
-        for (int i = 0; i < entries.size(); i++) {
-            currWord = entries.get(i);
-
-            diff = col_width.get(i) - currWord.length();
-            // appends n blanks
-            fstPadding = IntStream.range(0, diff / 2)
-                    .mapToObj(n -> " ").collect(Collectors.joining(""));
-            sndPadding = IntStream.range(0, diff - (diff / 2))
-                    .mapToObj(n -> " ").collect(Collectors.joining(""));
-
-            out += fstPadding + currWord + sndPadding + "|";
-        }
-
-        return out + "\n";
-    }
-
-
-    private String createFrame(String in) {
-        // todo
-        return in;
-    }
-
 
     @Override
     public int selectTask() {
@@ -163,13 +116,11 @@ public class TerminalUI implements UserInterface {
         return Integer.parseInt(userInput);
     }
 
-
     @Override
     public void waitForResume() {
         System.out.print("Task paused, press any key to resume: ");
         scanner.nextLine();
     }
-
 
     @Override
     public int editEndingTime(String task_name) {
@@ -184,7 +135,6 @@ public class TerminalUI implements UserInterface {
         return Integer.parseInt(userInput);
     }
 
-
     @Override
     public void startTimerDisplay(Session task) {
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -197,7 +147,6 @@ public class TerminalUI implements UserInterface {
             }
         }, 10, DISPLAY_INTERVAL);
     }
-
 
     @Override
     public void endTimerDisplay(Session task) {

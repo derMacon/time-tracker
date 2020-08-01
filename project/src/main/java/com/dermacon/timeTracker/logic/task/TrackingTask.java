@@ -4,13 +4,18 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.dermacon.timeTracker.ui.StringUtils.DURATION_FORMAT;
+
+/**
+ * Task that will serve as a time measure unit in the system.
+ * When the tracking process starts, initially only the time
+ * stamp will be set. Only when the task is being stopped the
+ * finishing timestamp will be set.
+ */
 public class TrackingTask {
 
     public static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("dd" +
-                    "-MM" +
-                    "-yyyy HH:mm:ss");
-
+            DateTimeFormatter.ofPattern(DURATION_FORMAT);
 
     private LocalDateTime start;
     private LocalDateTime end;
@@ -73,7 +78,5 @@ public class TrackingTask {
                 + temp.format(FORMATTER) + ","
                 + duration_str;
     }
-
-
 
 }

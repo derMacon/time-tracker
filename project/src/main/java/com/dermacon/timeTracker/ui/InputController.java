@@ -4,6 +4,10 @@ import com.dermacon.timeTracker.logic.TrackingLogic;
 
 import java.util.Scanner;
 
+/**
+ * Controller class for the ui.
+ * Serves as an interface between the logic and the ui.
+ */
 public class InputController {
 
     private static final String REPEAT = "continue time tracking [y/n]: ";
@@ -20,6 +24,10 @@ public class InputController {
         this.logic = new TrackingLogic(ui);
     }
 
+
+    /**
+     * Main loop for the program flow.
+     */
     public void run() {
 
         Scanner s = new Scanner(System.in);
@@ -36,6 +44,10 @@ public class InputController {
 
     }
 
+
+    /**
+     * Loop for handling user interactions
+     */
     private void waitForUserInteraction() {
         do {
             ui.displayManual();
@@ -45,6 +57,10 @@ public class InputController {
     }
 
 
+    /**
+     * Waits for an user input and delegates it to
+     * the appropriate logic methods
+     */
     public void handleUserInteraction() {
         Scanner s = new Scanner(System.in);
         String userInteraction;

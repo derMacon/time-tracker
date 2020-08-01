@@ -4,18 +4,34 @@ import com.dermacon.timeTracker.logic.task.Session;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Interface for the user to interact with
+ */
 public interface UserInterface {
 
-
+    /**
+     * Displays the usage in the terminal
+     */
     void displayManual();
 
+    /**
+     * Displays the summed up Duration from all sessions in total
+     * @param total Duration from all sessions in total
+     */
     void displayTotalDuration(Duration total);
 
+    /**
+     * Displays the summed up Duration from all sessions that were tracked today
+     * @param today Duration from all sessions that were tracked today
+     */
     void displayTodayDuration(Duration today);
 
-    void displayOptions(Map<String, List<String>> table);
+    /**
+     * Displays all tracked Sessions in a table view
+     * @param trackedSessions Sessions to display
+     */
+    void displayOptions(List<Session> trackedSessions);
 
     /**
      * Setter for the task
@@ -27,10 +43,21 @@ public interface UserInterface {
      */
     int editEndingTime(String task_name);
 
+    /**
+     * Wait till the user resumes the Session
+     */
     void waitForResume();
 
+    /**
+     * Starts timer
+     * @param task task to display
+     */
     void startTimerDisplay(Session task);
 
+    /**
+     * Ends timer
+     * @param task task to display
+     */
     void endTimerDisplay(Session task);
 
 }
