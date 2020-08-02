@@ -31,7 +31,6 @@ public class Session {
 
     public Session(File file) {
         this.file = file;
-        this.tasks.push(new TrackingTask());
     }
 
     public File getFile() {

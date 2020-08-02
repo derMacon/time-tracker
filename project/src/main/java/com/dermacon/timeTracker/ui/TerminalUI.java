@@ -141,7 +141,7 @@ public class TerminalUI implements UserInterface {
             @Override
             public void run() {
                 if (task.isRunning()) {
-                    System.out.print("user input [" + task.getTodayDuration()
+                    System.out.print("user input [" + formatDuration(task.getTodayDuration())
                             + "] > \r");
                 }
             }
