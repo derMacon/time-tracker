@@ -53,7 +53,7 @@ public class InputController {
             ui.displayManual();
             handleUserInteraction();
             logic.showMenu();
-        } while (!logic.isRunning());
+        } while (logic.isRunning());
     }
 
 

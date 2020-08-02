@@ -76,8 +76,8 @@ public class TerminalUI implements UserInterface {
         for (Session currSession : sessions) {
             idx.add(String.valueOf(i++));
             name.add(currSession.getFile().getName());
-            today.add(formatDuration(currSession.getTotalDuration()));
-            total.add(formatDuration(currSession.getTodayDuration()));
+            today.add(formatDuration(currSession.getTodayDuration()));
+            total.add(formatDuration(currSession.getTotalDuration()));
         }
 
         table.put(IDX_KEY, idx);
@@ -151,6 +151,11 @@ public class TerminalUI implements UserInterface {
     @Override
     public void endTimerDisplay(Session task) {
         timer.cancel();
+    }
+
+    @Override
+    public void displayErrorMessage(String message) {
+        System.out.println("Error: " + message);
     }
 
 }

@@ -60,4 +60,10 @@ public interface UserInterface {
      */
     void endTimerDisplay(Session task);
 
+    /**
+     * Displays an error message on the gui
+     * @param message message to display
+     */
+    void displayErrorMessage(String message);
+
 }

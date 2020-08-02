@@ -13,6 +13,8 @@ import java.util.List;
 
 public class FileHandler {
 
+    private static final String CSV_HEADER = "start,finish,total";
+
     public static List<File> getTrackedFiles() {
         List<File> l = new LinkedList<>();
         l.add(new File("erp.csv"));
@@ -22,20 +24,26 @@ public class FileHandler {
         return l;
     }
 
-    public static void save(Session task) {
-        File f = task.getFile();
+    public static void save(Session session) throws IOException {
 
-        Path p = f.toPath();
-        String s = System.lineSeparator() + task.toString();
+        Path p = getCleanFile(session).toPath();
+        String s = CSV_HEADER + "\n" + session.toString();
 
-        try (BufferedWriter writer = Files.newBufferedWriter(p, StandardOpenOption.APPEND)) {
-            writer.write(s);
-        } catch (IOException ioe) {
-            System.err.format("IOException: %s%n", ioe);
+        BufferedWriter writer = Files.newBufferedWriter(p, StandardOpenOption.APPEND);
+        writer.write(s);
+        writer.close();
+
+        System.out.println("task:     " + session.getFile().getName() + "\n"
+                + "appended:\n" + session.toString());
+    }
+
+    private static File getCleanFile(Session session) throws IOException {
+        File f = session.getFile();
+        if (f.exists() && f.isFile()) {
+            f.delete();
         }
-
-        System.out.println("task:     " + task.getFile().getName() + "\n"
-                + "appended: " + task.toString());
+        f.createNewFile();
+        return f;
     }
 
 

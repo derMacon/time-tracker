@@ -11,7 +11,6 @@ import java.util.List;
 
 public class TrackingLogic {
 
-
     private final UserInterface ui;
 
     private List<Session> trackedSessions;
@@ -28,8 +27,6 @@ public class TrackingLogic {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public boolean isRunning() {
@@ -58,7 +55,6 @@ public class TrackingLogic {
         ui.displayOptions(trackedSessions);
     }
 
-
     public void selectTask() {
         showGeneralInfo();
         showMenu();
@@ -71,7 +67,6 @@ public class TrackingLogic {
         ui.startTimerDisplay(selectedSession);
     }
 
-
     public void editEndingTime() {
         int offset_minutes = ui.editEndingTime(selectedSession.getFile().getName());
         selectedSession.addMinutes(offset_minutes * -1);
@@ -79,7 +74,14 @@ public class TrackingLogic {
 
     public void quit() {
         ui.endTimerDisplay(selectedSession);
-        FileHandler.save(selectedSession);
+        selectedSession.stop();
+
+        try {
+            FileHandler.save(selectedSession);
+        } catch (IOException e) {
+            ui.displayErrorMessage("not possible to save content to file: "
+                    + selectedSession.getFile().toString());
+        }
     }
 
     public void handlePause() {

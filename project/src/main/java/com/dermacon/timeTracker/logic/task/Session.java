@@ -49,6 +49,10 @@ public class Session {
         return !tasks.empty() && tasks.peek().isRunning();
     }
 
+    public void stop() {
+        this.tasks.peek().stopTask();
+    }
+
     public void pause() {
         if (isRunning()) {
             tasks.peek().stopTask();
