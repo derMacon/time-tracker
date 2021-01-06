@@ -1,6 +1,6 @@
 package com.dermacon.timeTracker.ui;
 
-import com.dermacon.timeTracker.logic.task.Session;
+import com.dermacon.timeTracker.logic.task.Activity;
 
 import java.time.Duration;
 import java.util.List;
@@ -29,9 +29,9 @@ public interface UserInterface {
 
     /**
      * Displays all tracked Sessions in a table view
-     * @param trackedSessions Sessions to display
+     * @param trackedActivities Sessions to display
      */
-    void displayOptions(List<Session> trackedSessions);
+    void displayOptions(List<Activity> trackedActivities);
 
     /**
      * Setter for the task
@@ -52,13 +52,13 @@ public interface UserInterface {
      * Starts timer
      * @param task task to display
      */
-    void startTimerDisplay(Session task);
+    void startTimerDisplay(Activity task);
 
     /**
      * Ends timer
      * @param task task to display
      */
-    void endTimerDisplay(Session task);
+    void endTimerDisplay(Activity task);
 
     /**
      * Displays an error message on the gui

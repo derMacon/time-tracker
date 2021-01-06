@@ -1,5 +1,9 @@
 package com.dermacon.timeTracker.io;
 
+import com.dermacon.timeTracker.exception.CsvNotFoundException;
+import com.dermacon.timeTracker.exception.InvalidCSVFormattingException;
+import com.dermacon.timeTracker.exception.TimeTrackerException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,8 +23,18 @@ public class CSVReader {
     private static final char DEFAULT_SEPARATOR = ',';
     private static final char DEFAULT_QUOTE = '"';
 
-    public static Map<String, List<String>> readCSV(File file) throws IOException {
-        List<List<String>> grid = readGrid(file);
+    public static Map<String, List<String>> readCSV(File file) throws TimeTrackerException {
+        List<List<String>> grid = null;
+
+        try {
+            grid = readGrid(file);
+        } catch (FileNotFoundException e) {
+            throw new CsvNotFoundException();
+        }
+
+        if (grid.isEmpty()) {
+            throw new InvalidCSVFormattingException();
+        }
         return createMap(grid);
     }
 

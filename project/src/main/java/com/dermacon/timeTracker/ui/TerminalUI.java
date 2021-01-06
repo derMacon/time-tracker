@@ -1,6 +1,6 @@
 package com.dermacon.timeTracker.ui;
 
-import com.dermacon.timeTracker.logic.task.Session;
+import com.dermacon.timeTracker.logic.task.Activity;
 
 import java.time.Duration;
 import java.util.LinkedHashMap;
@@ -51,8 +51,8 @@ public class TerminalUI implements UserInterface {
     }
 
     @Override
-    public void displayOptions(List<Session> trackedSessions) {
-        Map<String, List<String>> table = convertSessionsToMap(trackedSessions);
+    public void displayOptions(List<Activity> trackedActivities) {
+        Map<String, List<String>> table = convertSessionsToMap(trackedActivities);
         String printableStr = convertToPrintableStr(table);
         System.out.println(printableStr);
     }
@@ -60,10 +60,10 @@ public class TerminalUI implements UserInterface {
     /**
      * Converts a list of sessions to a map which can be displayed in a table
      *
-     * @param sessions List of sessions that will be processed
+     * @param activities List of sessions that will be processed
      * @return a list of sessions to a map which can be displayed in a table
      */
-    private static Map<String, List<String>> convertSessionsToMap(List<Session> sessions) {
+    private static Map<String, List<String>> convertSessionsToMap(List<Activity> activities) {
         // important, keep keys in order they were inserted (LinkedHashMap)
         Map<String, List<String>> table = new LinkedHashMap<>();
 
@@ -73,11 +73,11 @@ public class TerminalUI implements UserInterface {
         List<String> total = new LinkedList<>();
         int i = 1;
 
-        for (Session currSession : sessions) {
+        for (Activity currActivity : activities) {
             idx.add(String.valueOf(i++));
-            name.add(currSession.getFile().getName());
-            today.add(formatDuration(currSession.getTodayDuration()));
-            total.add(formatDuration(currSession.getTotalDuration()));
+            name.add(currActivity.getFile().getName());
+            today.add(formatDuration(currActivity.getTodayDuration()));
+            total.add(formatDuration(currActivity.getTotalDuration()));
         }
 
         table.put(IDX_KEY, idx);
@@ -136,7 +136,7 @@ public class TerminalUI implements UserInterface {
     }
 
     @Override
-    public void startTimerDisplay(Session task) {
+    public void startTimerDisplay(Activity task) {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -149,7 +149,7 @@ public class TerminalUI implements UserInterface {
     }
 
     @Override
-    public void endTimerDisplay(Session task) {
+    public void endTimerDisplay(Activity task) {
         timer.cancel();
     }
 

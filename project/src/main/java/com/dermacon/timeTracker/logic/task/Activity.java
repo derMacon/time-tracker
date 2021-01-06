@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 /**
  * Serves as a wrapper for a list of TrackingTask
  */
-public class Session {
+public class Activity {
 
     /**
      * Hour offset for midnight. A new day for the tracking task does not start at
@@ -29,7 +29,7 @@ public class Session {
      */
     private Stack<TrackingTask> tasks = new Stack<>();
 
-    public Session(File file) {
+    public Activity(File file) {
         this.file = file;
     }
 
@@ -104,35 +104,35 @@ public class Session {
 
 
     public Duration getTotalDuration() {
-        return Session.sumUpTasks(tasks, e -> true);
+        return Activity.sumUpTasks(tasks, e -> true);
     }
 
 
     public Duration getTodayDuration() {
-        return Session.sumUpTasks(tasks, Session::isSameDay);
+        return Activity.sumUpTasks(tasks, Activity::isSameDay);
     }
 
 
-    public static Duration getDurationSum_total(List<Session> sessions) {
-        return sumUpSessions(sessions, e -> true);
+    public static Duration getDurationSum_total(List<Activity> activities) {
+        return sumUpSessions(activities, e -> true);
     }
 
-    public static Duration getDurationSum_today(List<Session> sessions) {
-        return sumUpSessions(sessions, Session::isSameDay);
+    public static Duration getDurationSum_today(List<Activity> activities) {
+        return sumUpSessions(activities, Activity::isSameDay);
     }
 
     /**
      * Sums up the duration for a list of sessions.
      * Only adds those Sessions that fulfill
-     * @param sessions Sessions that will be evaluated
+     * @param activities Sessions that will be evaluated
      * @param filter Predicate that will be evaluated for each Session
      * @return summed up duration of all given sessions
      */
-    private static Duration sumUpSessions(Collection<Session> sessions,
+    private static Duration sumUpSessions(Collection<Activity> activities,
                                        Predicate<TrackingTask> filter) {
         Duration out = Duration.ZERO;
-        for (Session session : sessions) {
-            out = out.plus(sumUpTasks(session.tasks, filter));
+        for (Activity activity : activities) {
+            out = out.plus(sumUpTasks(activity.tasks, filter));
         }
         return out;
     }

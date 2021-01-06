@@ -1,7 +1,11 @@
 package com.dermacon.timeTracker.ui;
 
+import com.dermacon.timeTracker.exception.TimeTrackerException;
 import com.dermacon.timeTracker.logic.TrackingLogic;
+import com.dermacon.timeTracker.logic.task.Activity;
+import com.dermacon.timeTracker.logic.task.ActivityLoader;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -18,70 +22,89 @@ public class InputController {
     private final UserInterface ui;
     private TrackingLogic logic;
 
-
     public InputController(UserInterface ui) {
         this.ui = ui;
-        this.logic = new TrackingLogic(ui);
+        this.logic = new TrackingLogic();
     }
-
 
     /**
      * Main loop for the program flow.
      */
-    public void run() {
-
-        Scanner s = new Scanner(System.in);
-        String userInput;
+    public void run() throws TimeTrackerException {
+        Activity selectedAct = null;
 
         do {
-            logic.selectTask();
-            waitForUserInteraction();
-
-            System.out.print(REPEAT);
-            userInput = s.nextLine();
-
-        } while (userInput.equalsIgnoreCase("y"));
+            List<Activity> activities = ActivityLoader.loadActivities();
+            ui.displayOptions(activities);
+            processActivity(selectAcitivity(activities));
+        } while (!logic.activityRunning());
 
     }
 
-
-    /**
-     * Loop for handling user interactions
-     */
-    private void waitForUserInteraction() {
+    private Activity selectAcitivity(List<Activity> activities) {
+        String input = null;
+        Scanner sc = new Scanner(System.in);
+        Activity out = null;
         do {
-            ui.displayManual();
-            handleUserInteraction();
-            logic.showMenu();
-        } while (logic.isRunning());
+            System.out.println("type idx: ");
+            input = sc.nextLine();
+
+            if (isInteger(input)) {
+                int idx = Integer.parseInt(input);
+                // create new activity
+                if (idx == 0) {
+                    System.out.println("create new");
+                    String name = sc.nextLine();
+                    out = ActivityLoader.createActivity(name);
+                } else if (idx <= activities.size()) {
+                    // select existent activity
+                    out = activities.get(idx);
+                }
+            }
+
+        } while (input.equalsIgnoreCase(QUIT_STR) || out == null);
+
+        return out;
     }
 
+    public static boolean isInteger(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Waits for an user input and delegates it to
      * the appropriate logic methods
      */
-    public void handleUserInteraction() {
-        Scanner s = new Scanner(System.in);
-        String userInteraction;
-        do {
-            userInteraction = s.next().toLowerCase();
-        } while (!userInteraction.equals(QUIT_STR)
-                && !userInteraction.equals(EDIT_STR)
-                && !userInteraction.equals(PAUSE_STR));
-
-        switch (userInteraction) {
-            case PAUSE_STR:
-                logic.handlePause();
-                break;
-            case EDIT_STR:
-                logic.editEndingTime();
-                logic.quit();
-                break;
-            case QUIT_STR:
-                logic.quit();
-                break;
+    public void processActivity(Activity activity) {
+        if (activity == null) {
+            return;
         }
+
+        do {
+            ui.displayManual();kk
+            logic.startActivity(activity);
+
+            Scanner sc = new Scanner(System.in);
+            switch (sc.nextLine()) {
+                case QUIT_STR:
+                    logic.quit();
+                    break;
+                case PAUSE_STR:
+                    logic.toggle();
+                    ui.waitForResume();
+                    logic.toggle();
+                    break;
+            }
+        } while (logic.activityRunning());
+
     }
 
 }
