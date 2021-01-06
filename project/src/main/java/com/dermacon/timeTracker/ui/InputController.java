@@ -89,7 +89,7 @@ public class InputController {
         }
 
         do {
-            ui.displayManual();kk
+            ui.displayManual();
             logic.startActivity(activity);
 
             Scanner sc = new Scanner(System.in);
