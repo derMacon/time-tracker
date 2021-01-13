@@ -1,2 +1,2 @@
-Main-Class: com.silas.projectlauncher.Main
+Main-Class: com.dermacon.timeTracker.App
 

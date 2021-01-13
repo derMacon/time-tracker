@@ -1,21 +1,29 @@
 package com.dermacon.timeTracker.ui;
 
-import com.dermacon.timeTracker.logic.TrackingTask;
-import com.dermacon.timeTracker.logic.duration.DurationTask;
+import com.dermacon.timeTracker.exception.ErrorCode;
+import com.dermacon.timeTracker.logic.Token;
+import com.dermacon.timeTracker.logic.task.Activity;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+import static com.dermacon.timeTracker.ui.StringUtils.convertToPrintableStr;
+
+/**
+ * User interface implementation for the terminal window
+ */
 public class TerminalUI implements UserInterface {
+
+    private static final String IDX_KEY = "idx";
+    private static final String NAME_KEY = "name";
+    private static final String TODAY_KEY = "today";
+    private static final String TOTAL_KEY = "total";
 
     private static final String INTRO = "time-tracker v1.0\n";
     private static final String MANUAL = "usage:\n" +
@@ -24,135 +32,103 @@ public class TerminalUI implements UserInterface {
             "  - q: quit without editing\n" +
             "  - e: quit with editing\n";
 
+    private final static String INPUT_CURSOR = "input: ";
 
+    private final static String MENU_FORMAT = "  - %s: %s\n";
 
-    private static final int FST_COL_WIDTH = 5;
-    private static final int SND_COL_WIDTH = 20;
-    private static final int THRD_COL_WIDTH = 20;
-    private static final int FRTH_COL_WIDTH = 20;
 
     private static final int DISPLAY_INTERVAL = 1000;
 
-    private Timer t = new Timer(true);
-
-
-    @Override
-    public void displayInfo(DurationTask bundle) {
-        System.out.println(INTRO + drawGeneralInfo(bundle));
-    }
-
-
-
+    private Timer timer = new Timer(true);
+    private Scanner scanner = new Scanner(System.in);
 
     @Override
-    public void displayOptions(Map<String, List<String>> table) {
-
-        List<Integer> width_columns = new ArrayList<>();
-        List<String> words = new LinkedList<>();
-        Integer longestWordLen;
-
-        for (Map.Entry<String, List<String>> entry : table.entrySet()) {
-            words.add(entry.getKey());
-            words.addAll(entry.getValue());
-
-            longestWordLen = words.stream()
-                    .max(Comparator.comparing(String::length))
-                    .get().length() + 2;
-            width_columns.add(longestWordLen);
-
-            words.clear();
-        }
-
-        // Header
-        String horiDivider = drawHoriDivider(width_columns);
-        StringBuilder table_print = new StringBuilder(horiDivider);
-        List<String> header = new ArrayList<>(table.keySet());
-        table_print.append(drawTableLine(header, width_columns));
-        table_print.append(horiDivider);
-
-        // rest of table
-        List<Map.Entry<String, List<String>>> body = new ArrayList<>(table.entrySet());
-        int height = body.get(0).getValue().size();
-
-        List<String> currLine = new ArrayList<>();
-        String formatted_line;
-
-        for (int i = 0; i < height; i++) {
-            for (Map.Entry<String, List<String>> entry : body) {
-                currLine.add(entry.getValue().get(i));
-            }
-
-            formatted_line = drawTableLine(currLine, width_columns);
-            currLine.clear();
-
-            table_print.append(formatted_line);
-        }
-
-        table_print.append(horiDivider);
-
-        System.out.println(table_print);
+    public void displayManual() {
+        System.out.println(INTRO + MANUAL);
     }
 
-    private String drawHoriDivider(List<Integer> col_width) {
-        StringBuilder out = new StringBuilder("+");
+    @Override
+    public void displayMenuOptions() {
+        String out = "options:\n";
+        for (Token token : Token.values()) {
+            out += String.format(MENU_FORMAT,
+                    token.getRegex(),
+                    token.getDescription());
+        }
+        System.out.println(out);
+    }
 
-        for(Integer currWidth : col_width) {
-            for (int i = 0; i < currWidth; i++) {
-                out.append('-');
-            }
-            out.append("+");
+    @Override
+    public void displayInputCursor() {
+        System.out.print(INPUT_CURSOR);
+    }
+
+    @Override
+    public void displayTotalDuration(Duration total) {
+        System.out.println(formatDuration(total));
+    }
+
+    @Override
+    public void displayTodayDuration(Duration today) {
+        System.out.println(formatDuration(today));
+    }
+
+    @Override
+    public void displayActivities(List<Activity> trackedActivities) {
+        Map<String, List<String>> table = convertSessionsToMap(trackedActivities);
+        String printableStr = convertToPrintableStr(table);
+        System.out.println(printableStr);
+    }
+
+    @Override
+    public void displayCurrActivity(Activity activity) {
+        System.out.println("current activity: " + activity);
+    }
+
+    /**
+     * Converts a list of sessions to a map which can be displayed in a table
+     *
+     * @param activities List of sessions that will be processed
+     * @return a list of sessions to a map which can be displayed in a table
+     */
+    private static Map<String, List<String>> convertSessionsToMap(List<Activity> activities) {
+        // important, keep keys in order they were inserted (LinkedHashMap)
+        Map<String, List<String>> table = new LinkedHashMap<>();
+
+        List<String> idx = new LinkedList<>();
+        List<String> name = new LinkedList<>();
+        List<String> today = new LinkedList<>();
+        List<String> total = new LinkedList<>();
+        int i = 1;
+
+        for (Activity currActivity : activities) {
+            idx.add(String.valueOf(i++));
+            name.add(currActivity.getFile().getName());
+            today.add(formatDuration(currActivity.getTodayDuration()));
+            total.add(formatDuration(currActivity.getTotalDuration()));
         }
 
-        return out.toString() + "\n";
+        table.put(IDX_KEY, idx);
+        table.put(NAME_KEY, name);
+        table.put(TODAY_KEY, today);
+        table.put(TOTAL_KEY, total);
+        return table;
     }
 
-    private String drawTableLine(List<String> entries, List<Integer> col_width) {
-        assert entries != null && col_width != null
-                && entries.size() == col_width.size();
-
-        String out = "|";
-        int diff;
-        String currWord;
-        String fstPadding, sndPadding;
-
-        for (int i = 0; i < entries.size(); i++) {
-            currWord = entries.get(i);
-
-            diff = col_width.get(i) - currWord.length();
-            // appends n blanks
-            fstPadding = IntStream.range(0, diff / 2)
-                    .mapToObj(n -> " ").collect(Collectors.joining(""));
-            sndPadding = IntStream.range(0, diff - (diff / 2))
-                    .mapToObj(n -> " ").collect(Collectors.joining(""));
-
-            out += fstPadding + currWord + sndPadding + "|";
-        }
-
-        return out + "\n";
-    }
-
-
-    private String drawGeneralInfo(DurationTask bundle) {
-        String total = "total: " + formatDuration(bundle.getTotal()) + "\n";
-        String today = "today: " + formatDuration(bundle.getToday()) + "\n\n";
-        return drawFrame(total + today);
-    }
-
-    // todo maybe delete this
-    public String formatDuration(Duration duration) {
+    /**
+     * Formats a given duration to a String that can be displayed
+     *
+     * @param duration duration that will be formatted
+     * @return a given duration to a String that can be displayed
+     */
+    private static String formatDuration(Duration duration) {
         long s = duration.getSeconds();
         return String.format("%02d:%02d:%02d:%02d",
                 s / (3600 * 24),
-                s / 3600,
+                (s / 3600) % 24,
                 (s % 3600) / 60,
                 (s % 60));
     }
-
-    private String drawFrame(String in) {
-        // todo
-        return in;
-    }
-
 
     @Override
     public int selectTask() {
@@ -169,30 +145,10 @@ public class TerminalUI implements UserInterface {
     }
 
     @Override
-    public InteractionMode waitForUserAbortion() {
-
-        System.out.println("\n" + MANUAL);
-
-        Scanner s = new Scanner(System.in);
-        String userInteraction;
-        do {
-            userInteraction = s.next();
-        } while (!userInteraction.equals("q") && !userInteraction.equals("e"));
-
-//        task.stopTask();
-//
-//        // user wants to edit ending time
-//        if (userInteraction.equals("e")) {
-//            editEndingTime(task);
-//        }
-
-        InteractionMode out = InteractionMode.QUIT_DIRECT;
-        if (userInteraction.equalsIgnoreCase("e")) {
-            out = InteractionMode.QUIT_EDIT;
-        }
-        return out;
+    public void waitForResume() {
+        System.out.print("Task paused, press any key to resume: ");
+        scanner.nextLine();
     }
-
 
     @Override
     public int editEndingTime(String task_name) {
@@ -200,31 +156,34 @@ public class TerminalUI implements UserInterface {
                 + "type the number of minutes you want to subtract from the " +
                 "end time");
         String userInput;
-        Scanner s = new Scanner(System.in);
         do {
-            userInput = s.nextLine();
+            userInput = scanner.nextLine();
         } while (!userInput.matches("\\d+"));
 
         return Integer.parseInt(userInput);
     }
 
-
     @Override
-    public void startTimerDisplay(TrackingTask task) {
-        t.scheduleAtFixedRate(new TimerTask() {
+    public void startTimerDisplay(Activity task) {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (task.isRunning()) {
-                    System.out.print("user input [" + task.displayPassedTime()
+                    System.out.print("user input [" + formatDuration(task.getTodayDuration())
                             + "] > \r");
                 }
             }
         }, 10, DISPLAY_INTERVAL);
     }
 
+    @Override
+    public void endTimerDisplay(Activity task) {
+        timer.cancel();
+    }
 
     @Override
-    public void endTimerDisplay(TrackingTask task) {
-        t.cancel();
+    public void displayErrorMessage(ErrorCode error) {
+        System.out.println("Error: " + error.toString());
     }
+
 }
