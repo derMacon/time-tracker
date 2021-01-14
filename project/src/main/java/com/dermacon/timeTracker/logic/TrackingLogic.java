@@ -22,12 +22,16 @@ public class TrackingLogic {
     }
 
     public void createActivity(String name) {
-        ActivityLoader.createActivity(name);
+        this.selectedActivity = ActivityLoader.createActivity(name);
     }
 
     public void deleteActivity(int idx) {
         System.out.println("delete idx: " + idx);
         // todo
+    }
+
+    public boolean isRunning() {
+        return selectedActivity != null;
     }
 
     public boolean activityRunning() {

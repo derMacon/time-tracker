@@ -1,7 +1,8 @@
 package com.dermacon.timeTracker.ui;
 
 import com.dermacon.timeTracker.exception.ErrorCode;
-import com.dermacon.timeTracker.logic.Token;
+import com.dermacon.timeTracker.logic.commands.MenuToken;
+import com.dermacon.timeTracker.logic.commands.TimerToken;
 import com.dermacon.timeTracker.logic.task.Activity;
 
 import java.time.Duration;
@@ -26,16 +27,8 @@ public class TerminalUI implements UserInterface {
     private static final String TOTAL_KEY = "total";
 
     private static final String INTRO = "time-tracker v1.0\n";
-    private static final String MANUAL = "usage:\n" +
-            "  - p: pause (wip)\n" +
-            "  - i: insert pause (wip)\n" +
-            "  - q: quit without editing\n" +
-            "  - e: quit with editing\n";
-
     private final static String INPUT_CURSOR = "input: ";
-
     private final static String MENU_FORMAT = "  - %s: %s\n";
-
 
     private static final int DISPLAY_INTERVAL = 1000;
 
@@ -44,22 +37,26 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public void displayManual() {
-        System.out.println(INTRO + MANUAL);
-    }
-
-    @Override
-    public void displayMenuOptions() {
-        String out = "options:\n";
-        for (Token token : Token.values()) {
-            out += String.format(MENU_FORMAT,
-                    token.getRegex(),
-                    token.getDescription());
+        String out = INTRO;
+        for (TimerToken tt : TimerToken.values()) {
+            out += String.format(MENU_FORMAT, tt.getRegex(), tt.getDescription());
         }
         System.out.println(out);
     }
 
     @Override
-    public void displayInputCursor() {
+    public void displayMenuOptions() {
+        String out = "options:\n";
+        for (MenuToken menuToken : MenuToken.values()) {
+            out += String.format(MENU_FORMAT,
+                    menuToken.getRegex(),
+                    menuToken.getDescription());
+        }
+        System.out.println(out);
+    }
+
+    @Override
+    public void displayMenuCursor() {
         System.out.print(INPUT_CURSOR);
     }
 

@@ -69,7 +69,7 @@ public interface UserInterface {
      */
     void displayErrorMessage(ErrorCode error);
 
-    void displayInputCursor();
+    void displayMenuCursor();
 
     void displayCurrActivity(Activity activity);
 
