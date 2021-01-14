@@ -194,6 +194,8 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public String timerInput() {
+        KeyLogger k = new KeyLogger(timer);
+
 //        timer.cancel();
         return scanner.nextLine();
     }
