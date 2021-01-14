@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import static com.dermacon.timeTracker.ui.StringUtils.convertToPrintableStr;
 
@@ -164,14 +163,9 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public void startTimerDisplay(Activity task) {
-        act = task;
-//        timer.scheduleAtFixedRate(new TimerTask() {
-//            @Override
-//            public void run() {
-//                System.out.print("user input [" + formatDuration(task.getTodayDuration())
-//                        + "] > \r");
-//            }
-//        }, 10, DISPLAY_INTERVAL);
+        // will stop once any key was pressed
+        TimerDisplay timer = new TimerDisplay(task);
+        timer.run(task);
     }
 
     @Override
@@ -197,15 +191,7 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public String timerInput() {
-        KeyLogger k = new KeyLogger(act);
-        k.startTimerDisplay(act);
-
-//        timer.cancel();
         return scanner.nextLine();
     }
-
-
-
-
 
 }
