@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface UserInterface {
 
+    // ------------------- output / view ------------------- //
+
     /**
      * Displays the usage in the terminal
      */
@@ -72,5 +74,13 @@ public interface UserInterface {
     void displayMenuCursor();
 
     void displayCurrActivity(Activity activity);
+
+
+    // ------------------- input ------------------- //
+
+
+    String menuInput();
+
+    String timerInput();
 
 }

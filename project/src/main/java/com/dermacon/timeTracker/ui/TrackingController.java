@@ -5,13 +5,8 @@ import com.dermacon.timeTracker.logic.TrackingLogic;
 import com.dermacon.timeTracker.logic.commands.TimerToken;
 import com.dermacon.timeTracker.logic.task.Activity;
 
-import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.regex.Matcher;
 
 public class TrackingController {
 
@@ -30,15 +25,14 @@ public class TrackingController {
         ui.displayCurrActivity(currActivity);
         ui.displayManual();
 
-        Scanner sc = new Scanner(System.in);
         do {
             ui.startTimerDisplay(currActivity);
-            parse(sc);
+            parseTimerInput();
         } while (logic.isRunning());
     }
 
-    private void parse(Scanner sc) {
-        String input = sc.nextLine();
+    private void parseTimerInput() {
+        String input = ui.timerInput();
 
         Optional<TimerToken> tt = Arrays.stream(TimerToken.values())
                 .filter(e -> e.matches(input))

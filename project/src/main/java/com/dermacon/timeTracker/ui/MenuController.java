@@ -6,7 +6,6 @@ import com.dermacon.timeTracker.logic.TrackingLogic;
 import com.dermacon.timeTracker.logic.task.Activity;
 
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 
 import static com.dermacon.timeTracker.exception.ErrorCode.INVALID_MENU_INPUT;
@@ -33,11 +32,11 @@ public class MenuController {
         ui.displayActivities(activities);
         ui.displayMenuOptions();
         ui.displayMenuCursor();
-        parseNextLine();
+        parseMenuInput();
     }
 
-    private void parseNextLine() throws TimeTrackerException {
-        String input = new Scanner(System.in).nextLine();
+    private void parseMenuInput() throws TimeTrackerException {
+        String input = ui.menuInput();
         boolean foundMatcher = false;
 
         Matcher m = MenuToken.SELECT.getMatcher(input);
@@ -63,7 +62,7 @@ public class MenuController {
         if (!foundMatcher) {
             ui.displayErrorMessage(INVALID_MENU_INPUT);
             ui.displayMenuCursor();
-            parseNextLine();
+            parseMenuInput();
         }
     }
 

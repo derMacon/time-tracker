@@ -4,7 +4,6 @@ import com.dermacon.timeTracker.exception.ErrorCode;
 import com.dermacon.timeTracker.logic.commands.MenuToken;
 import com.dermacon.timeTracker.logic.commands.TimerToken;
 import com.dermacon.timeTracker.logic.task.Activity;
-import com.sun.tools.jdeprscan.scan.Scan;
 
 import java.time.Duration;
 import java.util.LinkedHashMap;
@@ -166,10 +165,8 @@ public class TerminalUI implements UserInterface {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (task.isRunning()) {
-                    System.out.print("user input [" + formatDuration(task.getTodayDuration())
-                            + "] > \r");
-                }
+                System.out.print("user input [" + formatDuration(task.getTodayDuration())
+                        + "] > \r");
             }
         }, 10, DISPLAY_INTERVAL);
     }
@@ -189,11 +186,18 @@ public class TerminalUI implements UserInterface {
 
     // ------------------- input ------------------- //
 
-//    @Override
-//    public String menuInput() {
-//        Scanner sc = new Scanner(System.in);
-//
-//    }
+    @Override
+    public String menuInput() {
+        return scanner.nextLine();
+    }
+
+
+    @Override
+    public String timerInput() {
+//        timer.cancel();
+        return scanner.nextLine();
+    }
+
 
 
 
