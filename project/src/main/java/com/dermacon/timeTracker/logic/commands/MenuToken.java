@@ -1,18 +1,17 @@
-package com.dermacon.timeTracker.logic;
+package com.dermacon.timeTracker.logic.commands;
 
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public enum Token {
+public enum MenuToken {
     SELECT("select (\\d+)", "select activity"),
     DELETE("delete (\\d+)", "delete activity"),
-    CREATE("create (\\d+)", "create new activity");
+    CREATE("create ([a-z]+)", "create new activity");
 
     private final String regex;
     private final String description;
 
-    Token(String regex, String description) {
+    MenuToken(String regex, String description) {
         this.regex = regex;
         this.description = description;
     }

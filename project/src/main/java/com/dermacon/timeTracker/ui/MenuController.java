@@ -1,12 +1,11 @@
 package com.dermacon.timeTracker.ui;
 
 import com.dermacon.timeTracker.exception.TimeTrackerException;
-import com.dermacon.timeTracker.logic.Token;
+import com.dermacon.timeTracker.logic.commands.MenuToken;
 import com.dermacon.timeTracker.logic.TrackingLogic;
 import com.dermacon.timeTracker.logic.task.Activity;
 
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 
 import static com.dermacon.timeTracker.exception.ErrorCode.INVALID_MENU_INPUT;
@@ -32,29 +31,29 @@ public class MenuController {
         List<Activity> activities = logic.getActivities();
         ui.displayActivities(activities);
         ui.displayMenuOptions();
-        ui.displayInputCursor();
-        parseNextLine();
+        ui.displayMenuCursor();
+        parseMenuInput();
     }
 
-    private void parseNextLine() throws TimeTrackerException {
-        String input = new Scanner(System.in).nextLine();
+    private void parseMenuInput() throws TimeTrackerException {
+        String input = ui.menuInput();
         boolean foundMatcher = false;
 
-        Matcher m = Token.SELECT.getMatcher(input);
+        Matcher m = MenuToken.SELECT.getMatcher(input);
         if (m.matches()) {
             int idx = Integer.parseInt(m.group(1));
             logic.selectActivity(idx);
             foundMatcher = true;
         }
 
-        m = Token.DELETE.getMatcher(input);
+        m = MenuToken.DELETE.getMatcher(input);
         if (!foundMatcher && m.matches()) {
             int idx = Integer.parseInt(m.group(1));
             logic.deleteActivity(idx);
             foundMatcher = true;
         }
 
-        m = Token.CREATE.getMatcher(input);
+        m = MenuToken.CREATE.getMatcher(input);
         if (!foundMatcher && m.matches()) {
             logic.createActivity(m.group(1));
             foundMatcher = true;
@@ -62,8 +61,8 @@ public class MenuController {
 
         if (!foundMatcher) {
             ui.displayErrorMessage(INVALID_MENU_INPUT);
-            ui.displayInputCursor();
-            parseNextLine();
+            ui.displayMenuCursor();
+            parseMenuInput();
         }
     }
 

@@ -1,7 +1,8 @@
 package com.dermacon.timeTracker.ui;
 
 import com.dermacon.timeTracker.exception.ErrorCode;
-import com.dermacon.timeTracker.logic.Token;
+import com.dermacon.timeTracker.logic.commands.MenuToken;
+import com.dermacon.timeTracker.logic.commands.TimerToken;
 import com.dermacon.timeTracker.logic.task.Activity;
 
 import java.time.Duration;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import static com.dermacon.timeTracker.ui.StringUtils.convertToPrintableStr;
 
@@ -26,16 +26,8 @@ public class TerminalUI implements UserInterface {
     private static final String TOTAL_KEY = "total";
 
     private static final String INTRO = "time-tracker v1.0\n";
-    private static final String MANUAL = "usage:\n" +
-            "  - p: pause (wip)\n" +
-            "  - i: insert pause (wip)\n" +
-            "  - q: quit without editing\n" +
-            "  - e: quit with editing\n";
-
     private final static String INPUT_CURSOR = "input: ";
-
     private final static String MENU_FORMAT = "  - %s: %s\n";
-
 
     private static final int DISPLAY_INTERVAL = 1000;
 
@@ -44,22 +36,26 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public void displayManual() {
-        System.out.println(INTRO + MANUAL);
-    }
-
-    @Override
-    public void displayMenuOptions() {
-        String out = "options:\n";
-        for (Token token : Token.values()) {
-            out += String.format(MENU_FORMAT,
-                    token.getRegex(),
-                    token.getDescription());
+        String out = INTRO;
+        for (TimerToken tt : TimerToken.values()) {
+            out += String.format(MENU_FORMAT, tt.getRegex(), tt.getDescription());
         }
         System.out.println(out);
     }
 
     @Override
-    public void displayInputCursor() {
+    public void displayMenuOptions() {
+        String out = "options:\n";
+        for (MenuToken menuToken : MenuToken.values()) {
+            out += String.format(MENU_FORMAT,
+                    menuToken.getRegex(),
+                    menuToken.getDescription());
+        }
+        System.out.println(out);
+    }
+
+    @Override
+    public void displayMenuCursor() {
         System.out.print(INPUT_CURSOR);
     }
 
@@ -163,17 +159,13 @@ public class TerminalUI implements UserInterface {
         return Integer.parseInt(userInput);
     }
 
+    private Activity act;
+
     @Override
     public void startTimerDisplay(Activity task) {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (task.isRunning()) {
-                    System.out.print("user input [" + formatDuration(task.getTodayDuration())
-                            + "] > \r");
-                }
-            }
-        }, 10, DISPLAY_INTERVAL);
+        // will stop once any key was pressed
+        TimerDisplay timer = new TimerDisplay(task);
+        timer.run(task);
     }
 
     @Override
@@ -184,6 +176,22 @@ public class TerminalUI implements UserInterface {
     @Override
     public void displayErrorMessage(ErrorCode error) {
         System.out.println("Error: " + error.toString());
+    }
+
+
+
+
+    // ------------------- input ------------------- //
+
+    @Override
+    public String menuInput() {
+        return scanner.nextLine();
+    }
+
+
+    @Override
+    public String timerInput() {
+        return scanner.nextLine();
     }
 
 }
