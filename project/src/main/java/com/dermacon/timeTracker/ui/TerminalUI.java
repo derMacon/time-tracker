@@ -4,6 +4,7 @@ import com.dermacon.timeTracker.exception.ErrorCode;
 import com.dermacon.timeTracker.logic.commands.MenuToken;
 import com.dermacon.timeTracker.logic.commands.TimerToken;
 import com.dermacon.timeTracker.logic.task.Activity;
+import com.sun.tools.jdeprscan.scan.Scan;
 
 import java.time.Duration;
 import java.util.LinkedHashMap;
@@ -182,5 +183,19 @@ public class TerminalUI implements UserInterface {
     public void displayErrorMessage(ErrorCode error) {
         System.out.println("Error: " + error.toString());
     }
+
+
+
+
+    // ------------------- input ------------------- //
+
+//    @Override
+//    public String menuInput() {
+//        Scanner sc = new Scanner(System.in);
+//
+//    }
+
+
+
 
 }

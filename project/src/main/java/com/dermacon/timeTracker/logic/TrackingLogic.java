@@ -18,11 +18,11 @@ public class TrackingLogic {
     }
 
     public void selectActivity(int idx) throws TimeTrackerException {
-        ActivityLoader.loadActivities().get(idx);
+        selectedActivity = ActivityLoader.loadActivities().get(idx);
     }
 
     public void createActivity(String name) {
-        this.selectedActivity = ActivityLoader.createActivity(name);
+        selectedActivity = ActivityLoader.createActivity(name);
     }
 
     public void deleteActivity(int idx) {

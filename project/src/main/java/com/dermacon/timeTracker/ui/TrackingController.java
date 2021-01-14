@@ -25,12 +25,14 @@ public class TrackingController {
 
     public void run() {
         Activity currActivity = logic.getSelectedActivity();
+        currActivity.startNewTask();
+
         ui.displayCurrActivity(currActivity);
         ui.displayManual();
 
         Scanner sc = new Scanner(System.in);
         do {
-            ui.startTimerDisplay(logic.getSelectedActivity());
+            ui.startTimerDisplay(currActivity);
             parse(sc);
         } while (logic.isRunning());
     }
