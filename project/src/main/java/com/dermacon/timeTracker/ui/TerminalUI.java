@@ -160,15 +160,18 @@ public class TerminalUI implements UserInterface {
         return Integer.parseInt(userInput);
     }
 
+    private Activity act;
+
     @Override
     public void startTimerDisplay(Activity task) {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                System.out.print("user input [" + formatDuration(task.getTodayDuration())
-                        + "] > \r");
-            }
-        }, 10, DISPLAY_INTERVAL);
+        act = task;
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                System.out.print("user input [" + formatDuration(task.getTodayDuration())
+//                        + "] > \r");
+//            }
+//        }, 10, DISPLAY_INTERVAL);
     }
 
     @Override
@@ -194,7 +197,8 @@ public class TerminalUI implements UserInterface {
 
     @Override
     public String timerInput() {
-        KeyLogger k = new KeyLogger(timer);
+        KeyLogger k = new KeyLogger(act);
+        k.startTimerDisplay(act);
 
 //        timer.cancel();
         return scanner.nextLine();
